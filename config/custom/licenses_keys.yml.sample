@@ -1,0 +1,55 @@
+# -*- mode: yaml; -*-
+# Time-stamp: <Wed 2021-04-14 16:56 svarrette>
+################################################
+# Example of Licence provisioning within RESIF 3.0
+# Based on EasyBuild hook -- see hooks/ulhpc.py
+# - Hook documentation: https://easybuild.readthedocs.io/en/latest/Hooks.html
+# You would typically define the LICENSES_YAML_FILE variable to point to
+# The present file
+###################
+# /!\ YOU PROBABLY NEVER WANT THIS FILE AND ITS CONTENT TO BE PUBLISHED
+#
+# Below is provided relevant examples you may want to adapt to your
+# own HPC centre
+
+# Gurobi:
+#     key: null
+#     license_file: '/opt/apps/licenses/gurobi/gurobi.lic'
+#     license_server: null
+#     license_server_port: null
+#     modextravars:
+#         GRB_LICENSE_FILE: '/opt/apps/licenses/gurobi/gurobi.lic'
+#     # Default value for modextrapaths is {} not null nor None
+#     modextrapaths: {}
+
+# MATLAB:
+#     key:
+#       version:
+#           2019b: 'XXXX'
+#           2020a: 'YYYY'
+#     license_file: '/opt/apps/licenses/matlab/network.lic'
+#     license_server: 'mylmserver.domain.org'
+#     license_server_port: '12345'
+#     java_options: '-Xmx4096m'
+#     modextravars:
+#         MLM_LICENSE_FILE: '/opt/apps/licenses/matlab/network.lic'
+#     # Default value for modextrapaths is {} not null nor None
+#     modextrapaths: {}
+
+# Advisor:
+#     key: null
+#     license_file: '/opt/apps/licenses/intel/license.lic'
+#     license_server: null
+#     license_server_port: null
+
+# ArmForge:
+#    key: null
+#    license_file = '/opt/apps/licenses/allinea/forge/license.lic'
+#    license_server: null
+#    license_server_port: null
+
+# ArmReports:
+#    key: null
+#    license_file = '/opt/apps/licenses/allinea/reports/license.lic'
+#    license_server: null
+#    license_server_port: null
