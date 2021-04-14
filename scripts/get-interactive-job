@@ -1,0 +1,69 @@
+#!/bin/bash -l
+# Time-stamp: <Wed 2021-04-14 17:56 svarrette>
+###############################################################################
+# Helper script to centralize management of interactive jobs for RESIF builds
+
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+TOP_DIR=$(realpath -es "${SCRIPT_DIR}/..")
+if [ -f "${SCRIPT_DIR}/include/common.bash" ]; then
+    source ${SCRIPT_DIR}/include/common.bash
+else
+    echo "Unable to find ${SCRIPT_DIR}/include/common.bash, exiting"
+    exit 1
+fi
+NODE_TYPE=broadwell
+# If symlink, guess node type from suffix assuming <scriptname>-<nodetype> format
+[ -L "$0" ] && NODE_TYPE=$(echo basename $0 | sed 's/.*-\([^-]*\)$/\1/')
+
+usage() {
+    cat <<EOF
+  $(basename $0):
+      Get an interactive job for '${NODE_TYPE}' node to test a RESIF build.
+      By default, this will reserve one **full** node (i.e. 1 task over 28 threads)
+USAGE
+  $0 [-n] [-c 1]
+
+OPTIONS:
+  -n --dry-run: Dry run mode
+  -c <N>: ask <N> core (thread) instead of 28 (default) -- may be scheduled faster
+EOF
+}
+
+################################################################################
+# Check for options
+while [ $# -ge 1 ]; do
+    case $1 in
+        -h | --help) usage; exit 0;;
+        -n | --dry-run) CMD_PREFIX=echo;;
+        b*) NODE_TYPE=broadwell;;
+        s*) NODE_TYPE=skylake;;
+        g*) NODE_TYPE=gpu;;
+        *) OPTS=$*; break;;
+    esac
+    shift
+done
+settings=${ULHPC_CLUSTER:=iris}
+[ $NODE_TYPE == 'gpu' ] && settings=${settings}-gpu
+[[ "$(whoami)" == 'resif' ]] && settings="prod/${VERSION:-<version>}/${settings}"
+
+cat <<EOF
+== get interactive job for a ${NODE_TYPE} node ==
+ONCE allocated, you probably want to run:
+
+    source settings/${settings}.sh
+
+EOF
+if [[ "$(whoami)" != 'resif' ]]; then
+    cat <<EOF
+OR, to **test** builds against a production release <version>:
+
+    source settings/<version>/${settings}.sh
+
+EOF
+fi
+
+echo "=> get interactive job for a ${NODE_TYPE} node"
+case $NODE_TYPE in
+    gpu) ${CMD_PREFIX} si-gpu             -N1 --ntasks-per-node 1 -c 28 -G1 ${OPTS} -t 2:00:00;;
+    *)   ${CMD_PREFIX} si -C ${NODE_TYPE} -N1 --ntasks-per-node 1 -c 28     ${OPTS} -t 2:00:00;;
+esac
