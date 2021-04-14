@@ -1,0 +1,89 @@
+#! /bin/bash
+# Time-stamp: <Wed 2021-04-14 17:23 svarrette>
+################################################################################
+# PR-create - Open a new pull-request via 'eb --new-pr'
+################################################################################
+# cosmetics
+BOLD="\033[1m"
+COLOR_RESET="\033[0m"
+# Local variables
+TOP_DIR="$(cd "$( dirname "${BASH_SOURCE[0]}" )" && git rev-parse --show-toplevel)"
+CMD_PREFIX=
+PR=
+
+################################################################################
+info()  { echo -e "${BOLD}$*${COLOR_RESET}"; }
+error() { echo -e "${BOLD}*** ERROR *** $*${COLOR_RESET}"; }
+print_error_and_exit() { error $*; exit 1; }
+usage() {
+    cat <<EOF
+NAME
+  $(basename $0): Submitting a new pull requests to the official Easyconfigs repository
+                 See https://github.com/easybuilders/easybuild-easyconfigs/pull
+USAGE
+  $0 [-m <MSG>] easyconfigs/<path/to/file>.eb
+
+  This will:
+  1. check code style with 'eb --check-contrib easyconfigs/<path/to/file>.eb'
+  2. submit a new pull requests with 'eb --new-pr easyconfigs/<path/to/file>.eb [...]'
+  3. store info on the running pull-request in a dedicated directory of this repository, i.e.:
+    - create the directory 'easyconfigs/pull-requests/<ID>'
+    - add symlink to the EB file (pointing to ../../<path/to/file>.eb)
+    - add and commit all files, incl. the EB file and the 'easyconfigs/pull-requests/<ID>' directory
+
+  Use: $(basename $0) --pr <ID> easyconfigs/<path/to/file>.eb
+  if you want to perform **ONLY** step 3 above
+
+EXAMPLE:
+  $0 easyconfigs/p/PGI/PGI-19.10-GCC-8.3.0-2.32.eb
+EOF
+}
+really_continue() {
+    echo -e -n "${BOLD}/!\\ WARNING $*${COLOR_RESET}.\nAre you sure you want to continue? [Y|n] "
+    read ans
+    case $ans in
+        n*|N*) exit 1;;
+    esac
+}
+################################################################################
+# Check for options
+while [ $# -ge 1 ]; do
+    case $1 in
+        -h | --help) usage; exit 0;;
+        -n | --noop | --dry-run)       CMD_PREFIX=echo;;
+        -m | --msg  | --pr-commit-msg) shift; OPTS="--pr-commit-msg '$1'";;
+        -i | --id   | --pr)            shift; PR=$1;;
+        *.eb) EBFILE=$1;;
+        *) OPTS="${OPTS} $*"; break;;
+    esac
+    shift
+done
+[ -z "${EBFILE}" ] && print_error_and_exit "Missing eb file as argument. '$(basename $0) -h' for help"
+[ ! -f "${EBFILE}" ] && print_error_and_exit "Non-existing file ${EBFILE}"
+
+really_continue "About to open a pull-request for '${EBFILE}'"
+
+if [ -z "${PR}" ]; then
+    info "=> checking code style for '${EBFILE}'"
+    ${CMD_PREFIX} eb --check-contrib ${EBFILE} || print_error_and_exit "Style to review or eb command not found (source settings/default.sh ?)"
+
+    info "=> submitting a new pull requests for '${EBFILE}'"
+    ${CMD_PREFIX} eb --new-pr ${EBFILE} ${OPTS}
+
+    echo -e -n "Enter created pull-request ID: "
+    [ -z "${CMD_PREFIX}" ] && read PR || { PR=1234; echo "(using fake PR: ${pr})"; }
+    case $PR in
+        ''|*[!0-9]*) print_error_and_exit "Pull-request ID ('${PR}') should be a number";;
+    esac
+fi
+
+info "=> storing info on pending Pull-Request #${PR}"
+${CMD_PREFIX} mkdir -p ${TOP_DIR}/easyconfigs/pull-requests/${PR}
+${CMD_PREFIX} ln -s ../../$(echo ${EBFILE} | sed 's/easyconfigs\///') ${TOP_DIR}/easyconfigs/pull-requests/${PR}/$(basename ${EBFILE})
+
+info "=> committing changes"
+software=$(echo $(basename ${EBFILE} '.eb') | cut -d '-' -f 1)
+version=$(echo  $(basename ${EBFILE} '.eb') | cut -d '-' -f 2)
+${CMD_PREFIX} git add ${EBFILE}
+${CMD_PREFIX} git add ${TOP_DIR}/easyconfigs/pull-requests/${PR}
+${CMD_PREFIX} git commit -s -m "[PR #${PR}] ${software} ${version}"
