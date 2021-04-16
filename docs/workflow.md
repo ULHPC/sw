@@ -18,9 +18,9 @@ git-flow feature start <name|version>
 git-flow feature publish <name|version>
 ```
 
-The Git workflow is actually more complex and detailed in [`contributing/git-flow.md`](contributing/git-flow.md):
+The [ULHPC] Git workflow is actually more complex and detailed in [`contributing/git-workflow.md`](contributing/git-workflow.md):
 
-[![](contributing/gitflow.png)](contributing/git-flow.md)
+[![](contributing/gitflow.png)](contributing/git-workflow.md)
 
 
 ## Remote vs. Local developments

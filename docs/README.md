@@ -16,7 +16,7 @@ This is the main page of the documentation for this repository, which relies on 
 * Complete [Installation and Setup notes](setup.md) notes
 * Overview of the proposed [Easybuild Framework @ ULHPC](environment.md)
 * Overview and Hierarchy of the proposed [UL HPC Modules Bundles](swsets/index.md)
-* [Contributing notes](contributing/index.md) (including a summary of the [Git workflow](contributing/git-flow.md)) and [semantic versioning](contributing/versioning.md) information of this project
+* [Contributing notes](contributing/index.md) (including a summary of the [(ULHPC) Git workflow](contributing/git-workflow.md)) and [semantic versioning](contributing/versioning.md) information of this project
 
 To limit the explosion of custom easyconfigs as was done in the past, the key objective of this project is to **minimize** the number of custom easyconfigs to the _strict_ minimum and thus to submit a maximum of easyconfigs to the community for integration in the official [`easybuilders/easybuild-easyconfigs`](https://github.com/easybuilders/easybuild-easyconfigs) repository.
 
