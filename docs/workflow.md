@@ -2,10 +2,10 @@
 
 ULHPC software sets was released using RESIF v2 up to Nov 2019, and were based at that time on the 2019a toolchain.
 The workflow proved to be quite complex and hard to maintain.
-Furthermore, the broken compliance with streamline EasyBuild developments led to an explosionpau
+Furthermore, the broken compliance with streamline EasyBuild developments led to an explosion
 of custom configurations. With the advent of a new supercomputer (named Aion) featuring a different CPU architecture (AMD Epyc instead of Intel Broadwell/Skylake), and to mitigate the identified limitations, a complete code refactoring was initiated leading to the RESIF 3.0 framework
 
-The validation of the RESIF v3 workflow was proposed on **2019b** toolchain (since 2020a was not yet released at that time of these developments), with the objective to import the complete software set onto up-to-date versions matching 2019b requirements.
+The validation of the RESIF v3 workflow was proposed on **2019b** toolchain (since 2020a was not yet released at the time of these developments), with the objective to import the complete software set onto up-to-date versions matching 2019b requirements.
 RESIF 3 is further used to generate the 2020a and so forth releases
 
 The below guildelines illustrates the import of the software `<name>` into one of the ULHPC bundle. Remember that if possible, all software were proposed in the past for _both_ the `foss[cuda]` and the `intel[cuda]` toolchains. This should still guide the development process.
@@ -20,7 +20,7 @@ git-flow feature publish <name|version>
 
 The [ULHPC] Git workflow is actually more complex and detailed in [`contributing/git-workflow.md`](contributing/git-workflow.md):
 
-[![](contributing/gitflow.png)](contributing/git-workflow.md)
+[![](contributing/ULHPC-git-workflow.png)](contributing/ULHPC-git-workflow.png)
 
 
 ## Remote vs. Local developments
@@ -296,9 +296,12 @@ or
 
 ```bash
 export LICENSES_YAML_FILE="/path/to/licenses_keys.yaml"
-export EASYBUILD_HOOKS=./hooks/license_hooks.py
+export EASYBUILD_HOOKS=$(pwd)/hooks/license_hooks.py
 ./scripts/launcher-test-build-cpu.sh ebconfig --hooks=./hooks/license_hooks.py
 ```
+
+_Note_: the hooks settings are enabled by default in `settings/default.sh`
+It's thus up to you to set appropriately the `LICENSES_YAML_FILE` variable to point to your site license.
 
 ## Contribute to Easybuild
 

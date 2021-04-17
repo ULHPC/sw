@@ -435,12 +435,12 @@ eb --check-github   # All checks PASSed!
 ```
 
 
-__On `iris` cluster__
+__On `iris/aion` cluster__
 
 ``` bash
-### On iris, go on a broadwell node
-srun -p interactive -N 1 --ntasks-per-node 1 -c 28 -C broadwell --pty bash
-source settings/iris.sh      # source settings/iris-skylake.sh on skylake node
+### On iris, this will go on a broadwell node
+./scripts/get-interactive-job
+source settings/${ULHPC_CLUSTER}.sh
 # enable SSH agent
 eval "$(ssh-agent)"
 ssh-add ~/.ssh/id_rsa
@@ -453,6 +453,8 @@ make fork-easyconfigs-update
 eb --check-github   # ONLY new-pr and update-pr should FAIL
 # reason is that most probably you don't want the ssh key on the cluster authorized
 # to push on ULHPC fork
+eval "$(ssh-agent -k)"
 ```
+
 
 ## That's all folks!!

@@ -57,6 +57,35 @@ $ ./scripts/get-interactive-job-skylake
 $ ./scripts/get-interactive-job-gpu
 ```
 
+## (Eventually) Install/update EB
+
+Use the interactive jobs to install/update EB to the latest version using `scripts/setup.h` **AFTER** sourcing the appropriate settings
+
+```bash
+### Iris broadwell or Aion epyc
+$ ./scripts/get-interactive-job -c1
+$ source settings/[prod/]${ULHPC_CLUSTER}.sh
+$ ./scripts/setup.sh -h    # check $EASYBUILD_PREFIX
+$ ./scripts/setup.sh -n
+$ ./scripts/setup.sh
+
+### Iris skylake
+$ ./scripts/get-interactive-job-skylake.sh -c1
+$ source settings/[prod/]${ULHPC_CLUSTER}.sh
+$ ./scripts/setup.sh -h    # check $EASYBUILD_PREFIX
+$ ./scripts/setup.sh -n
+$ ./scripts/setup.sh
+
+### Iris GPU
+$ ./scripts/get-interactive-job-gpu.sh -c1
+$ source settings/[prod/]${ULHPC_CLUSTER}-gpu.sh
+$ ./scripts/setup.sh -h    # check $EASYBUILD_PREFIX
+$ ./scripts/setup.sh -n
+$ ./scripts/setup.sh
+```
+
+
+
 ## Testing Builds (project `sw`)
 
 You can test builds under `/work/projects/sw/resif` (`$LOCAL_RESIF_ROOT_DIR`) under your ULHPC account (assuming you belong to the group `sw`) with the launcher scripts `scripts/launcher-test-build-*`.
@@ -302,3 +331,30 @@ You **MUST BE VERY CAREFUL** when running these scripts as they alter the produc
 | **Prod** build | `broadwell` | `./scripts/prod/launcher-prod-build-cpu.sh         -v <version>` | `source settings/prod/<version>/iris.sh`     |
 | **Prod** build | `skylake`   | `./scripts/prod/launcher-prod-build-cpu-skylake.sh -v <version>` | `source settings/prod/<version>/iris.sh`     |
 | **Prod** build | `gpu`       | `./scripts/prod/launcher-prod-build-gpu.sh         -v <version>` | `source settings/prod/<version>/iris-gpu.sh` |
+
+### Preliminary: configure `ULHPC/sw` repository for the `resif` user
+
+For a production release, it is necessary to configure the `ULHPC/sw` repository under the `resif` user.
+
+* Update the `resif` ULHPC user (also on gitlab/github)
+* configure access to the repo on git (NOT with deployed key, but as user)
+* Follow-up [setup](setup.md) instructions:
+   - install direnv
+   - create virtualenv: `python3 -m venv ~/venv/resif3`
+   - clone `ULHPC/sw` repo and setup bash and local fork of the Easyconfigs repository
+
+```bash
+ssh resif@iris-cluster
+mkdir git/gitlab.uni.lu/ULHPC
+cd git/gitlab.uni.lu/ULHPC
+git clone ssh://git@gitlab.uni.lu:8022/ULHPC/sw.git
+cd sw
+python3 -m venv ~/venv/resif3
+make setup
+make setup-direnv
+direnv allow .
+make setup-python
+```
+Post-check iris: you need also to prepare the `/opt/apps/resif/licenses_keys.yaml` as per [hook configurations](environment.md)
+
+### Interactive tests and EB install/update

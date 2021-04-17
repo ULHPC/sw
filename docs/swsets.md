@@ -10,7 +10,7 @@ It also facilitates the _reproducible_ and _self-contained_ deployment of the co
 
 ## ULHPC Toolchains, programming languages and compilers
 
-**[Technical Documentation](https://hpc-docs.uni.lu/environment/modules/#ulhpc-toolchains-and-software-set-versioning)
+**[Technical Documentation](https://hpc-docs.uni.lu/environment/modules/#ulhpc-toolchains-and-software-set-versioning)**
 
 | __Name__  | __Type__  | 2019[a] (_deprecated_) |  __2019b__ (`old`) |  __2020a__ (`prod`) | __2021a*__ (`devel`) |
 |-----------|-----------|------------------------|--------------------|---------------------|----------------------|
@@ -45,7 +45,7 @@ The dependencies for User Software Set are organized as follows:
 │   │                               #    - lib:       General purpose libraries (incl. Communication Libraries, I/O Libraries...)
 │   │                               #    - numlib:    Numerical Libraries
 │   │                               #    - system:    System utilities (e.g. highly depending on system OS and hardware)
-│   ├── ULHPC-bd-<version>        ### Big Data
+│   ├── ULHPC-bd-<version>        ### Big Data Analytics
 │   ├── ULHPC-bio-<version>       ### Bioinformatics, biology and biomedical
 │   ├── ULHPC-cs-<version>        ### Computational science, including:
 │   │                               #    - cae:       Computer Aided Engineering (incl. CFD)
@@ -55,7 +55,7 @@ The dependencies for User Software Set are organized as follows:
 │   │                               #    - quantum:   Quantum Computing
 │   │                               #    - phys: Physics and physical systems simulations
 │   │                               #
-│   ├── ULHPC-dl-<version>        ### AI / Deep Learning / Machine Learning, BigData analytics
+│   ├── ULHPC-dl-<version>        ### AI / Deep Learning / Machine Learning
 │   ├── ULHPC-math-<version>      ### High-level mathematical software
 │   ├── ULHPC-perf-<version>      ### Performance evaluation / Benchmarks
 │   ├── ULHPC-tools-<version>     ### Misc tools, incl.

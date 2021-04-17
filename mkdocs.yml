@@ -1,0 +1,20 @@
+site_name: ULHPC Software Management (RESIF v3.0)
+nav:
+- Home: 'index.md'
+- Organization: 'layout.md'
+- Pre-Requisites and Repository Setup: 'setup.md'
+- Easybuild Framework @ ULHPC: 'environment.md'
+- UL HPC Software Set Bundles: 'swsets.md'
+- User Software builds: 'build.md'
+- Workflow and Development guidelines: 'workflow.md'
+- Production releases notes:
+  - 2019b: 'releases/2019b.md'
+- Contributing:
+  - Overview: 'contributing/index.md'
+  - Directory Layout: 'layout.md'
+  - Git workflow: 'contributing/git-workflow.md'
+  - Setup Integration with Github for Easyconfigs contributions: 'contributing/setup-github-integration.md'
+  - Submitting working Easyconfigs to easybuilders: 'contributing/pull-requests.md'
+  - Closing a merged Pull Request: 'contributing/closing-merged-pr.md'
+  - Repository Semantic Versioning: 'contributing/versioning.md'
+theme: readthedocs
