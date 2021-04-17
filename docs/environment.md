@@ -121,7 +121,7 @@ See also [`setup.md`](setup.md)
 We no longer require YAML files in a separate repository to define a software set.
 The idea is now to rely on native Easybuild Module bundles _i.e.,_ using the [`Bundle`](https://easybuild.readthedocs.io/en/latest/version-specific/generic_easyblocks.html#bundle) easyblocks.
 
-For more details, see [`swsets/README.md`](swsets/index.md)
+For more details, see [`swsets.md`](swsets.md)
 
 ## UL HPC Software Builds
 
