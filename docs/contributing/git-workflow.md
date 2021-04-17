@@ -63,12 +63,13 @@ git config –-global core.editor vim    # your preferred editor
 git config --global merge.tool kdiff3  # your preferred merge tool
 ```
 * You may want to configure the following aliases (see also [those examples](https://github.com/Falkor/dotfiles/blob/master/oh-my-zsh/custom/plugins/falkor/falkor.plugin.zsh#L144)):
-   ```bash
-   alias gg="git log  --graph --pretty=format:'%C(auto)%h -%d %s %Cgreen(%cr)%Creset %C(bold blue)<%an>%Creset' --abbrev-commit --max-count=20"
-   alias gd='git diff'
-   alias u='git pull origin'
-   alias s='git status'
-   ```
+
+```bash
+alias gg="git log  --graph --pretty=format:'%C(auto)%h -%d %s %Cgreen(%cr)%Creset %C(bold blue)<%an>%Creset' --abbrev-commit --max-count=20"
+alias gd='git diff'
+alias u='git pull origin'
+alias s='git status'
+```
 
 * **Anything in the `devel | master` branch is stable/deployable** (ready for production release)
 
