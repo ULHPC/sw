@@ -10,13 +10,17 @@
 
 __User Software Management for Uni.lu HPC Facility 3.0__
 
+[![](slides_acm-pearc21-resif3_cover.png)](slides_acm-pearc21-resif3.pdf)
+
 This is the main page of the documentation for this repository, which relies on [MkDocs](http://www.mkdocs.org/) and the [Read the Docs](http://readthedocs.io) theme. It proposes to detail the following elements:
 
 * The [organization and directory layout](layout.md)
 * Complete [Installation and Setup notes](setup.md) notes
 * Overview of the proposed [Easybuild Framework @ ULHPC](environment.md)
 * Overview and Hierarchy of the proposed [UL HPC Modules Bundles](swsets.md)
+* Slurm launchers and [RESIF 3 User Software sets build instructions](build.md)
 * [Contributing notes](contributing/index.md) (including a summary of the [(ULHPC) Git workflow](contributing/git-workflow.md)) and [semantic versioning](contributing/versioning.md) information of this project
+    - Details on [contribution workflow for  ULHPC Bundle developments](workflow.md)
 
 To limit the explosion of custom easyconfigs as was done in the past, the key objective of this project is to **minimize** the number of custom easyconfigs to the _strict_ minimum and thus to submit a maximum of easyconfigs to the community for integration in the official [`easybuilders/easybuild-easyconfigs`](https://github.com/easybuilders/easybuild-easyconfigs) repository.
 
@@ -24,3 +28,5 @@ To limit the explosion of custom easyconfigs as was done in the past, the key ob
     - [Setup instructions for Integration with Github](contributing/setup-github-integration.md) to allow for Easyconfigs contributions
     - guildelines to [submit working Easyconfigs to easybuilders as Pull-Requests](contributing/pull-requests.md)
     - Instructions to perform [upon merged Pull Request for repository cleanup](contributing/closing-merged-pr.md)
+
+__`/!\ IMPORTANT`__: You can submit bug / issues / feature request using the [`ULHPC/sw` Project Issue Tracker](https://github.com/ULHPC/sw/issues)

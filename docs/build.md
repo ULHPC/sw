@@ -1,7 +1,7 @@
 # User Software builds
 
 Slurm launchers are provided under `scripts/`  to facilitate software builds.
-A GNU screen configuration file is provided to quickly bootstrap the appropriate tabs:
+For convenience, a GNU screen configuration file `config/screenrc` is provided to quickly bootstrap the appropriate tabs:
 
 ```bash
 screen -c config/screenrc
@@ -16,7 +16,11 @@ screen -c config/screenrc
 #    ./scripts/get-interactive-job-skylake
 # 'gpu' tab for associated build. Ex interactive job:
 #    ./scripts/get-interactive-job-gpu
+# 'epyc' tab  for aion builds
+#    ssh aion
+#    ./scripts/get-interactive-job
 ```
+
 Don't forget to kill your ssh agent when you have finish: `eval "$(ssh-agent -k)"`
 
 You are encouraged to submit/run your builds in each appropriate `<arch>` tab, where you can follow the logs of a given passive build with:
@@ -356,5 +360,3 @@ direnv allow .
 make setup-python
 ```
 Post-check iris: you need also to prepare the `/opt/apps/resif/licenses_keys.yaml` as per [hook configurations](environment.md)
-
-### Interactive tests and EB install/update

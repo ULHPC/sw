@@ -1,11 +1,12 @@
 # Easybuild Framework @ ULHPC
 
 * __Resources__:
-    - RESIF v2 notes: see `docs/software/user_software_environment/resif_iris/README.first.md`
     - [CSCS Easybuild Environment](https://www.cscs.ch/fileadmin/user_upload/contents_userLab/building_software_piz_daint.pdf)
-    - [Historical notes and concept overview (slides)](slides_resif3_overview.pdf)
+    - [ACM PEARC'21 Paper presenting RESIF 3](https://dl.acm.org/doi/10.1145/3437359.3465600)
+    - [ULHPC Technical documentation](https://hpc-docs.uni.lu/environment/modules/)
+    - [Easybuild Tutorial](https://easybuilders.github.io/easybuild-tutorial/)
 
-[![](slides_resif3_overview_cover.png)](slides_resif3_overview.pdf)
+[![](slides_acm-pearc21-resif3_cover.png)](slides_acm-pearc21-resif3.pdf)
 
 ## Architecture-at-a-glance
 
