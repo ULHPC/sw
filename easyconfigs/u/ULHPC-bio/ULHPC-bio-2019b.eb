@@ -1,0 +1,70 @@
+# -*- mode: python; -*-
+##
+# This file is an EasyBuild reciPY as per https://github.com/easybuilders/easybuild
+#
+# Copyright:: Copyright 2020-2021 University of Luxembourg
+# Authors::
+# * UL HPC Team <hpc-team@uni.lu>
+# License::   MIT/GPL
+
+easyblock = "Bundle"
+
+name = 'ULHPC-bio'
+version = '2019b'
+
+homepage = 'https://hpc.uni.lu/'
+description = """
+Generic Module bundle for Bioinformatics, biology and biomedical software in use on the UL HPC Facility, especially at LCSB
+"""
+
+toolchain = SYSTEM
+
+# See https://easybuild.readthedocs.io/en/latest/Common-toolchains.html#overview-of-common-toolchains
+local_gccver      = '8.3.0'
+local_intelver    = '2019.5.281'
+local_binutilsver = '2.32'
+local_pyver       = '3.7.4'
+local_llvmver     = '9.0.1'
+
+dependencies = [
+    #-----------------------------------------------------------------------------------------------------------------
+    # Tools and libraries for the Molecular Dynamics, Material Science and Biology related simulation
+    #-----------------------------------------------------------------------------------------------------------------
+    ('PLUMED',   '2.5.3',   '-Python-%s'%(local_pyver),  ('intel',    version)),
+    ('PLUMED',   '2.5.3',   '-Python-%s'%(local_pyver),  ('foss',     version)),
+    ('BioPerl',  '1.7.2',   '',                          ('GCCcore',  local_gccver)),
+    #-----------------------------------------------------------------------------------------------------------------
+    # Molecular Dynamics/Material Science
+    #-----------------------------------------------------------------------------------------------------------------
+    ('GROMACS',         '2019.4',  '',                   ('foss',     version)),       # molecular dynamics (Ex: biochemical molecules
+    ('GROMACS',         '2020',  '',                     ('foss',     version)),       # molecular dynamics (Ex: biochemical molecules
+                                                                                       # like proteins, lipids and nucleic acids...)
+    # TODO intel version
+    # The following things should be checked with latest dependenies
+    ('QuantumESPRESSO', '6.7',     '',                   ('intel',    version)),
+    ('QuantumESPRESSO', '6.7',     '',                   ('foss',     version)),
+    #('ABINIT',          '8.10.2'   '',                   ('intel',    version)),
+    #('ESPResSo',        '4.0.2',   '',                   ('intel',    version)),
+    #-----------------------------------------------------------------------------------------------------------------
+    # Bioinformatics tools for next-gen sequencing analysis
+    #-----------------------------------------------------------------------------------------------------------------
+    ('BamTools',   '2.5.1',   '',                         ('GCC',      local_gccver)),  # BAM files management
+    ('BEDTools',   '2.29.2',  '',                         ('GCC',      local_gccver)),  # Toolset for genome arithmetic
+    ('Bowtie2',    '2.3.5.1', '',                         ('GCC',      local_gccver)),  # Fast and sensitive sequencing
+                                                                                        # read alignment
+    ('Bowtie2',    '2.3.5.1', '',                         ('iccifort', local_intelver)),
+    ('SAMtools',   '1.10',    '',                         ('GCC',      local_gccver)),  # high-throughput sequencing data
+    #('XML-LibXML','2.0201',  '',                         ('GCCcore',  local_gccver)),  # Bio dependency
+    ('Trinity',    '2.10.0',  '-Python-%s'%(local_pyver), ('foss',     version)),
+    ('BWA',        '0.7.17',  '',                         ('GCC',      local_gccver)),
+    ('FastQC',     '0.11.9',  '',                         ('Java',     '11')),
+    ('HTSlib',     '1.10.2',  '',                         ('GCC',      local_gccver)),
+    ('TopHat',     '2.1.2',   '',                         ('gompi',    version)),       # fast splice junction mapper
+                                                                                        # for RNA-Seq reads
+    ('TopHat',     '2.1.2',   '',                         ('iimpi',    version)),
+    #('ABySS',     '2.1.5',   '',                         ('foss',     version)),       # not used in the last year
+    ('BLAST+',     '2.9.0',   '',                         ('gompi',    version)),       # not used in the last year
+    #------------------------------------------------------------------------------------------------------------------
+]
+
+moduleclass = 'system'

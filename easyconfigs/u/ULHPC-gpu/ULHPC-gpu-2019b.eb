@@ -1,0 +1,70 @@
+# -*- mode: python; -*-
+##
+# This file is an EasyBuild reciPY as per https://github.com/easybuilders/easybuild
+#
+# Copyright:: Copyright 2020-2021 University of Luxembourg
+# Authors::
+# * UL HPC Team <hpc-team@uni.lu>
+# License::   MIT/GPL
+
+easyblock = "Bundle"
+
+name = 'ULHPC-gpu'
+version = '2019b'
+
+homepage = 'https://hpc.uni.lu/'
+description = """
+Generic Module bundle for GPU accelerated User Software in use on the UL HPC Facility
+"""
+
+toolchain = SYSTEM
+
+# See https://easybuild.readthedocs.io/en/latest/Common-toolchains.html#overview-of-common-toolchains
+local_gccver      = '8.3.0'
+local_cudaver     = '10.1.243'
+# local_binutilsver = '2.32'
+local_pyver       = '3.7.4'
+local_llvmver     = '9.0.1'
+local_tfver       = '2.1.0'
+local_torchver    = '1.7.1'
+
+dependencies = [
+    #------------------------------
+    # System
+    #------------------------------
+    ('CUDA', local_cudaver),
+    #------------------------------
+    # Main toolchains / Compilers
+    #------------------------------
+    ('gcccuda',     version),
+    ('fosscuda',    version),
+    ('intelcuda',   version),
+    #('PGI', '19.10', '-2-32', ('GCC', local_gccver)),
+    #----------------
+    # MPI stacks
+    #----------------
+    ('OpenMPI', '3.1.4', '', ('gcccuda', version)),
+    #----------------
+    # Libraries/tools
+    #----------------
+    ('NCCL', '2.4.8', '', ('gcccuda', version)),
+    ('cuDNN', '7.6.4.38', '', ('gcccuda', version)),
+    # weird syntax because the eb is: Clang-9.0.1-GCC-8.3.0-CUDA-10.1.243.eb , so without toolchain
+    ('Clang', local_llvmver, '-GCC-%s-CUDA-%s'%(local_gccver, local_cudaver)),
+    # GDAL-3.0.2-fosscuda-2019b-Python-3.7.4.eb
+    ('GDAL', '3.0.2', '-fosscuda-%s-Python-%s'%(version, local_pyver)),
+    ('magma', '2.5.1', '', ('fosscuda', version)),
+    #----------------
+    # Applications
+    #----------------
+    ('PyTorch', local_torchver, '-Python-%s'%(local_pyver), ('fosscuda', version)),
+    ('TensorFlow', local_tfver, '-Python-%s'%(local_pyver), ('fosscuda', version)),
+    ('TensorFlow', '1.15.5', '-Python-%s'%(local_pyver), ('fosscuda', version)),
+    ('Theano', '1.0.4', '-Python-%s'%(local_pyver), ('fosscuda', version)),
+    ('Keras', '2.3.1', '-Python-%s'%(local_pyver), ('fosscuda', version)),
+    ('Horovod', '0.19.1', '-TensorFlow-%s-Python-%s'%(local_tfver, local_pyver), ('fosscuda', version)),
+    ('R', '3.6.2', '', ('fosscuda', version)),
+    ('GROMACS', '2019.6', '', ('fosscuda', version)),
+]
+
+moduleclass = 'system'

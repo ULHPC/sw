@@ -1,0 +1,103 @@
+#! /bin/bash
+# Time-stamp: <Fri 2020-04-10 16:27 svarrette>
+################################################################################
+# update-from-PR - Update your local easyconfigs from Pull Request
+################################################################################
+# cosmetics
+BOLD="\033[1m"
+COLOR_RESET="\033[0m"
+# Local variables
+TOP_DIR="$(cd "$( dirname "${BASH_SOURCE[0]}" )" && git rev-parse --show-toplevel)"
+
+# Use default settings for the repository path
+[ -f "${TOP_DIR}/settings/default.sh" ] && source "${TOP_DIR}/settings/default.sh"
+
+REPOSITORYPATH="$EASYBUILD_GIT_WORKING_DIRS_PATH/easybuild-easyconfigs"
+CMD_PREFIX=
+PR=
+
+################################################################################
+info()  { echo -e "${BOLD}$*${COLOR_RESET}"; }
+error() { echo -e "${BOLD}*** ERROR *** $*${COLOR_RESET}"; }
+print_error_and_exit() { error $*; exit 1; }
+usage() {
+    cat <<EOF
+NAME
+  $(basename $0): Update your local easyconfigs from Pull Request
+USAGE
+  $0 <ID>
+  # Example: $0 10294
+
+  This will:
+  1. Collect info on the Pull request using the Github API
+     - using 'curl https://api.github.com/repos/easybuilders/easybuild-easyconfigs/pulls/<ID>'
+     - resulting JSON stored under 'logs/$(date +%F)-pull-request-<ID>.json'
+  2. synchronize the (fork) easyconfigs repository using 'make fork-easyconfigs-update'
+  3. checkout the pull request branch and get the latest commits/updates
+  4. update the local easyconfigs accordingly
+  5. checkout back to the 'develop' branch in the fork repository
+  6. delete the JSON file holding the REST API request
+EOF
+}
+really_continue() {
+    echo -e -n "${BOLD}/!\\ WARNING: $*${COLOR_RESET}.\nAre you sure you want to continue? [Y|n] "
+    read ans
+    case $ans in
+        n*|N*) exit 1;;
+    esac
+}
+################################################################################
+# Check for options
+while [ $# -ge 1 ]; do
+    case $1 in
+        -h | --help) usage; exit 0;;
+        -n | --noop | --dry-run) CMD_PREFIX=echo;;
+        *) PR=$1;;
+    esac
+    shift
+done
+[ -z "${PR}" ]           && print_error_and_exit "Usage: $0 <PR-ID>"
+case $PR in
+    ''|*[!0-9]*) print_error_and_exit "Pull-request ID ('${PR}') should be a number";;
+esac
+[ ! -d "${TOP_DIR}/easyconfigs/pull-requests/${PR}" ] &&
+    print_error_and_exit "Unable to find the directory '${TOP_DIR}/easyconfigs/pull-requests/${PR}'. Already merged/deleted pull-request?"
+
+really_continue "update your local easyconfigs from pull-request '${PR}'"
+
+GH_PR_JSON=${TOP_DIR}/logs/$(date +%F)-pull-request-${PR}.json
+if [ ! -f "${GH_PR_JSON}" ]; then
+    echo "=> collect pull-request status using Github API"
+    curl --silent https://api.github.com/repos/easybuilders/easybuild-easyconfigs/pulls/${PR} -o "${GH_PR_JSON}"
+else
+    echo "... using existing json '${GH_PR_JSON}'"
+fi
+[ ! -f "${GH_PR_JSON}" ] && print_error_and_exit "Unable to find JSON file '${GH_PR_JSON}'"
+title=$(grep  title ${GH_PR_JSON} | head -n 1 | cut -d '"' -f 4)
+pr_branch=$(grep 'ULHPC:' ${GH_PR_JSON} | cut -d '"' -f 4 | cut -d ':' -f 2)
+
+info "Updating (Fork) repository '${REPOSITORYPATH}'"
+${CMD_PREFIX} make fork-easyconfigs-update
+
+info "collecting last commits from [remote] branch '${pr_branch}' from (Fork) repository '${REPOSITORYPATH}'"
+${CMD_PREFIX} git -C ${REPOSITORYPATH} checkout ${pr_branch}
+${CMD_PREFIX} git -C ${REPOSITORYPATH} pull
+# List files
+for f in $(git -C ${REPOSITORYPATH} diff-tree --no-commit-id --name-only -r HEAD); do
+    local_f=$(echo $f | sed 's/easybuild\/easyconfigs\///')
+    info "=> updating local copy of '${local_f}'"
+    echo "   showing diff with '${REPOSITORYPATH}/${f}' and update local copy"
+    ${CMD_PREFIX} colordiff -ru ${TOP_DIR}/easyconfigs/${local_f}  ${REPOSITORYPATH}/${f}
+    ${CMD_PREFIX} cp ${REPOSITORYPATH}/${f} ${TOP_DIR}/easyconfigs/${local_f}
+    ${CMD_PREFIX} git add ${TOP_DIR}/easyconfigs/${local_f}
+done
+${CMD_PREFIX} git commit -s -m "[PR #${PR}] ${title} Update from Pull Request"
+
+info "=> restore state of (Fork) repository '${REPOSITORYPATH}'"
+echo "   checkout to branch 'develop'"
+${CMD_PREFIX} git -C ${REPOSITORYPATH} checkout develop
+echo "   delete local branch '${pr_branch}'"
+${CMD_PREFIX} git -C ${REPOSITORYPATH} branch -d ${pr_branch}
+
+info "removing ${GH_PR_JSON}"
+${CMD_PREFIX} rm -f ${GH_PR_JSON}

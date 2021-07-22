@@ -1,0 +1,99 @@
+# -*- mode: python; -*-
+##
+# This file is an EasyBuild reciPY as per https://github.com/easybuilders/easybuild
+#
+# Copyright:: Copyright 2020-2021 University of Luxembourg
+# Authors::
+# * UL HPC Team <hpc-team@uni.lu>
+# License::   MIT/GPL
+
+easyblock = "Bundle"
+
+name = 'ULHPC-cs'
+version = '2019b'
+
+homepage = 'https://hpc.uni.lu/'
+description = """
+Generic Module bundle for Computational science software in use on the UL HPC Facility,
+including:
+- Computer Aided Engineering, incl. CFD
+- Chemistry, Computational Chemistry and Quantum Chemistry
+- Data management & processing tools
+- Earth Sciences
+- Quantum Computing
+- Physics and physical systems simulations
+"""
+
+toolchain = SYSTEM
+
+# See https://easybuild.readthedocs.io/en/latest/Common-toolchains.html#overview-of-common-toolchains
+local_gccver      = '8.3.0'
+local_intelver    = '2019.5.281'
+local_binutilsver = '2.32'
+local_pyver       = '3.7.4'
+local_pyver2      = '2.7.16'
+local_llvmver     = '9.0.1'
+
+dependencies = [
+    # Bundle of Python packages for scientific software
+    ('SciPy-bundle', '2019.10', '-Python-%s'%(local_pyver), ('foss', version)),
+    ('SciPy-bundle', '2019.10', '-Python-%s'%(local_pyver), ('intel', version)),
+    #----------------------------------------------------------------------
+    # Physics & Chemistry
+    #----------------------------------------------------------------------
+    ('ASE',      '3.19.0', '-Python-%s'%(local_pyver), ('foss',    version)),       # Atomic Simulation Environment for Python
+    ('ASE',      '3.19.0', '-Python-%s'%(local_pyver), ('intel',   version)),
+    ('Meep',     '1.4.3', '',                          ('intel',   version)),
+    ('NAMD',     '2.13', '-mpi',                       ('foss',    version)),
+    ('CRYSTAL',     '17', '-1.0.2',                    ('intel',   version)),
+    ('VASP',     '5.4.4', '',                          ('intel',   version)),
+#    ('LAMMPS',   '7Aug2019','-Python-3.7.4-kokkos',    ('intel',   version)),
+    ('Elk',      '6.3.2',  '',                         ('intel',   version)),
+    #('GPAW',     '20.1.0', '-Python-%s'%(local_pyver), ('intel',   version)),
+    #('GPAW',     '20.1.0', '-Python-%s'%(local_pyver), ('foss',    version)),
+    ('phonopy',  '2.2.0',  '-Python-%s'%(local_pyver), ('intel',   version)),
+    ('phonopy',  '2.2.0',  '-Python-%s'%(local_pyver), ('foss',    version)),
+    #----------------------------------------------------------------------
+    #  Geospatial
+    #----------------------------------------------------------------------
+    ('GDAL',     '3.0.2', '-Python-%s'%(local_pyver),  ('foss',    version)),       # Translator library for raster geospatial data formats
+    ('GDAL',     '3.0.2', '-Python-%s'%(local_pyver),  ('intel',   version)),
+    ('PROJ',     '6.2.1', '',                          ('GCCcore', local_gccver)),  # Generic coordinate transformation software
+    #----------------------------------------------------------------------
+    # Parallel I/O & file format for Physics and Engineering simulations
+    #----------------------------------------------------------------------
+    ('HDF5',     '1.10.5', '',                         ('gompi',   version)),       # HDF5 data model, library, and file format
+    ('HDF5',     '1.10.5', '',                         ('iimpi',   version)),
+    ('netCDF',   '4.7.1',  '',                         ('gompi',   version)),       # NetCDF (network Common Data Form)
+    ('netCDF',   '4.7.1',  '',                         ('iimpi',   version)),
+    ('netCDF-Fortran', '4.5.2', '',                    ('iimpi',   version)),
+    ('LMDB',     '0.9.24', '',                         ('GCCcore', local_gccver)),
+    #----------------------------------------------------------------------
+    # Geometry and Meshing tools
+    # ---------------------------------------------------------------------
+    ('Sumo',     '1.3.1', '-Python-%s'%(local_pyver),('GCCcore', local_gccver)),
+    ('Salome',   '8.5.0', '',                          ('intel',   version)),
+    ('gmsh',     '4.4.0', '',                          ('intel',   version)),
+    #----------------------------------------------------------------------
+    # CAE, CFD, Solid Mechanics & CAD
+    # ---------------------------------------------------------------------
+    ('ANSYS',    '21.1'),
+    ('ANSYS',    '19.4'),
+    ('OpenFOAM', 'v1912', '',                             ('foss',    version)),
+    ('OpenFOAM', 'v1912', '',                             ('intel',   version)),
+    ('OpenFOAM-Extend', '4.1-20200408', '-Python-%s'%(local_pyver2), ('foss',    version)),
+    ('FDS',      '6.7.1', '',                             ('intel',   version)),
+    ('ABAQUS',   '2018-hotfix-1806'),
+    # Abaqus, OpenFOAM, FDS, PyFR, COMSOL Multiphysics
+    #----------------------------------------------------------------------
+    # Visualisation tools
+    # ---------------------------------------------------------------------
+    ('OpenCV',       '4.2.0',  '-Python-%s'%(local_pyver),     ('foss',    version)),
+    ('ParaView',     '5.6.2',  '-Python-%s-mpi'%(local_pyver), ('foss',    version)),
+    ('ParaView',     '5.6.2',  '-Python-%s-mpi'%(local_pyver), ('intel',   version)),
+#    ('VMD',          '1.9.3',  '-Python-%s'%(local_pyver2),    ('intel',   version)),
+    ('VirtualGL',    '2.6.2',  '',                             ('GCCcore', local_gccver)),
+    ('VTK',          '8.2.0',  '-Python-%s'%(local_pyver),     ('foss',    version)),
+]
+
+moduleclass = 'system'

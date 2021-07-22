@@ -1,0 +1,110 @@
+#! /bin/bash
+# Time-stamp: <Wed 2021-04-14 17:32 svarrette>
+################################################################################
+# PR-close - Close merged Pull Request
+################################################################################
+# cosmetics
+BOLD="\033[1m"
+COLOR_RESET="\033[0m"
+# Local variables
+TOP_DIR="$(cd "$( dirname "${BASH_SOURCE[0]}" )" && git rev-parse --show-toplevel)"
+
+REPOSITORYPATH="$EASYBUILD_GIT_WORKING_DIRS_PATH/easybuild-easyconfigs"
+CMD_PREFIX=
+PR=
+
+################################################################################
+info()  { echo -e "${BOLD}$*${COLOR_RESET}"; }
+error() { echo -e "${BOLD}*** ERROR *** $*${COLOR_RESET}"; }
+print_error_and_exit() { error $*; exit 1; }
+usage() {
+    cat <<EOF
+NAME
+  $(basename $0): Closing a merged pull requests to clean the repository from useless Easyconfigs
+USAGE
+  $0 <ID>
+  # Example: $0 10294
+
+  This will:
+  1. Collect info on the Pull request using the Github API
+     - using 'curl https://api.github.com/repos/easybuilders/easybuild-easyconfigs/pulls/<ID>'
+     - resulting JSON stored under 'logs/$(date +%F)-pull-request-<ID>.json'
+  2. delete from git the directory 'easyconfigs/pull-requests/<ID>' and the involved easyconfigs
+  3. synchronize the (fork) easyconfigs repository using 'make fork-easyconfigs-update'
+  4. delete the git branch(es) (including remotes) used for the pull request in
+     ${REPOSITORYPATH}
+  5. delete the JSON file holding the REST API request
+EOF
+}
+really_continue() {
+    echo -e -n "${BOLD}/!\\ WARNING: $*${COLOR_RESET}.\nAre you sure you want to continue? [Y|n] "
+    read ans
+    case $ans in
+        n*|N*) exit 1;;
+    esac
+}
+################################################################################
+# Check for options
+while [ $# -ge 1 ]; do
+    case $1 in
+        -h | --help) usage; exit 0;;
+        -n | --noop | --dry-run) CMD_PREFIX=echo;;
+        *) PR=$1;;
+    esac
+    shift
+done
+# Use default settings for the repository path
+[ -f "${TOP_DIR}/settings/default.sh" ] && source "${TOP_DIR}/settings/default.sh"
+# Sanity checks
+[ -z "${PR}" ]           && print_error_and_exit "Usage: $0 <PR-ID>"
+case $PR in
+    ''|*[!0-9]*) print_error_and_exit "Pull-request ID ('${PR}') should be a number";;
+esac
+[ ! -d "${TOP_DIR}/easyconfigs/pull-requests/${PR}" ] &&
+    print_error_and_exit "Unable to find the directory '${TOP_DIR}/easyconfigs/pull-requests/${PR}'. Already merged/deleted pull-request?"
+
+really_continue "closing merged pull-request '${PR}'"
+
+# Query PR from Github API
+GH_PR_JSON=${TOP_DIR}/logs/$(date +%F)-pull-request-${PR}.json
+if [ ! -f "${GH_PR_JSON}" ]; then
+    echo "=> collect pull-request status using Github API"
+    curl --silent https://api.github.com/repos/easybuilders/easybuild-easyconfigs/pulls/${PR} -o "${GH_PR_JSON}"
+else
+    echo "... using existing json '${GH_PR_JSON}'"
+fi
+[ ! -f "${GH_PR_JSON}" ] && print_error_and_exit "Unable to find JSON file '${GH_PR_JSON}'"
+title=$(grep  title ${GH_PR_JSON} | head -n 1 | cut -d '"' -f 4)
+author=$(grep login ${GH_PR_JSON} | head -n 1 | cut -d '"' -f 4)
+state=$(grep  state ${GH_PR_JSON} | head -n 1 | cut -d '"' -f 4)
+pr_branch=$(grep 'ULHPC:' ${GH_PR_JSON} | cut -d '"' -f 4 | cut -d ':' -f 2)
+if [ $state != 'closed' ]; then
+    error "Pull-request #${PR} (by ${author}) entitled '${title}' is NOT closed (state: '${state}')"
+    echo "  - see https://github.com/easybuilders/easybuild-easyconfigs/pull/${PR}"
+fi
+
+# List files associated to the pull-request in ${TOP_DIR}/easyconfigs/pull-requests/${pr}
+PR_DIR=${TOP_DIR}/easyconfigs/pull-requests/${PR}
+[ ! -d "${PR_DIR}" ] && print_error_and_exit "Unable to find directory '${PR_DIR}'"
+info "=> Repository [git] cleanup from 'easyconfigs/pull-requests/${PR}/' content"
+for f in ${PR_DIR}/*.eb; do
+    target=$(realpath ${f})
+    cat <<EOF
+deleting: symlink '${f}'
+   ...  and target eb file '${target}'
+EOF
+    ${CMD_PREFIX} git rm ${f}
+    ${CMD_PREFIX} git rm ${target}
+done
+${CMD_PREFIX} git rm -rf ${PR_DIR}
+${CMD_PREFIX} git commit -s -m "[Merged PR #${PR}] closing '${title}'; repo cleanup accordingly"
+
+info "Updating (Fork) repository '${REPOSITORYPATH}'"
+${CMD_PREFIX} make fork-easyconfigs-update
+
+info "deleting [remote] branch '${pr_branch}' from (Fork) repository '${REPOSITORYPATH}'"
+${CMD_PREFIX} git -C ${REPOSITORYPATH} branch -d ${pr_branch}
+${CMD_PREFIX} git -C ${REPOSITORYPATH} push origin --delete ${pr_branch}
+
+info "removing ${GH_PR_JSON}"
+${CMD_PREFIX} rm -f ${GH_PR_JSON}
