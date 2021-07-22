@@ -12,7 +12,7 @@ easyblock = "Bundle"
 name = 'ULHPC-dl'
 version = '2019b'
 
-homepage = 'http://hpc.uni.lu/'
+homepage = 'https://hpc.uni.lu/'
 description = """
 Generic Module bundle for (CPU-version) of AI / Deep Learning / Machine Learning software in use on the UL HPC Facility
 """

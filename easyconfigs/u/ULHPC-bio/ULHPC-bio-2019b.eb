@@ -14,7 +14,7 @@ version = '2019b'
 
 homepage = 'https://hpc.uni.lu/'
 description = """
-Generic Module bundle for Bioinformatics, biology and biomedical software in use on the UL HPC Facility (especially at LCSB)
+Generic Module bundle for Bioinformatics, biology and biomedical software in use on the UL HPC Facility, especially at LCSB
 """
 
 toolchain = SYSTEM
@@ -40,6 +40,7 @@ dependencies = [
     ('GROMACS',         '2020',  '',                     ('foss',     version)),       # molecular dynamics (Ex: biochemical molecules
                                                                                        # like proteins, lipids and nucleic acids...)
     # TODO intel version
+    # The following things should be checked with latest dependenies
     ('QuantumESPRESSO', '6.7',     '',                   ('intel',    version)),
     ('QuantumESPRESSO', '6.7',     '',                   ('foss',     version)),
     #('ABINIT',          '8.10.2'   '',                   ('intel',    version)),

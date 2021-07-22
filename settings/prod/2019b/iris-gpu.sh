@@ -1,8 +1,8 @@
-# Usage: source settings/prod/2019b/iris-gpu.sh
+# Usage: source settings/prod/<version>/iris-gpu.sh
 #
-# Example for interactive test
+# Example for interactive test (default: resif broadwell build)
 #   ./scripts/get-interactive-job-gpu
-#    source settings/prod/2019b/iris-gpu.sh
+#    source settings/prod/<version>/iris-gpu.sh
 #    echo $EASYBUILD_PREFIX
 
 TOP_DIR="$(cd "$( dirname "${BASH_SOURCE[0]}" )" && git rev-parse --show-toplevel)"

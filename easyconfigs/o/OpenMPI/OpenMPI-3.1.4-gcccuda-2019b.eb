@@ -1,0 +1,73 @@
+name = 'OpenMPI'
+version = '3.1.4'
+
+homepage = 'https://www.open-mpi.org/'
+description = """The Open MPI Project is an open source MPI-3 implementation."""
+
+toolchain = {'name': 'gcccuda', 'version': '2019b'}
+
+source_urls = ['https://www.open-mpi.org/software/ompi/v%(version_major_minor)s/downloads']
+sources = [SOURCELOWER_TAR_GZ]
+patches = ['%(name)s-3.1.3-add_ompi_datatype_attribute_to_release_ucp_datatype.patch']
+checksums = [
+    'a7c34ad052ea8201ed9e7389994069fe6996403beabdd2d711caf0532808156c',  # openmpi-3.1.4.tar.gz
+    # OpenMPI-3.1.3-add_ompi_datatype_attribute_to_release_ucp_datatype.patch
+    '46fa94eb417954bdb297291bad4f4d32018af4911bebf3e59af6276eba6a50a9',
+]
+
+local_gccver      = '8.3.0'
+
+builddependencies = [
+    ('CUDA', '10.1.243', '', ('GCC', local_gccver)),
+]
+
+# needed for --with-verbs
+osdependencies = [(
+    'libibverbs-dev',
+    'libibverbs-devel',
+    'rdma-core-devel'
+)]
+
+dependencies = [
+    ('zlib', '1.2.11'),
+    ('hwloc', '1.11.12')
+]
+
+# to enable SLURM integration (site-specific)
+# to enable SLURM integration (site-specific)
+# See also CSCS version https://github.com/easybuilders/CSCS/blob/master/easybuild/easyconfigs/o/OpenMPI/OpenMPI-3.1.4-GCC-7.4.0-2.31.1-cuda-9.2.eb
+configopts = (
+    "--with-cuda=${EBROOTCUDA} "
+    "--enable-static "
+    "--enable-mpi-cxx "
+    "--with-zlib "
+    "--with-hwloc "
+    "--with-pmi "
+    "--with-pmix=external "
+    "--with-libevent=/usr "
+    "--with-verbs "
+    "--with-slurm "
+    "--without-ofi "
+    "--without-ucx "
+    "--without-mxm "
+    "--without-psm2 "
+    "--without-alps "
+    "--without-tm "
+    "--without-loadleveler "
+    "--disable-memchecker "
+    "--enable-dlopen "
+    "--enable-cxx-exceptions "
+    "--without-lsf "
+    "--without-sge "
+    "--without-moab "
+    "--enable-mpirun-prefix-by-default "
+)
+
+sanity_check_paths = {
+    'files': ["bin/%s" % x for x in ["ompi_info", "opal_wrapper", "orterun"]] +
+             ["lib/lib%s.%s" % (x, SHLIB_EXT) for x in ["mpi_mpifh", "mpi", "ompitrace", "open-pal", "open-rte"]] +
+             ["include/%s.h" % x for x in ["mpi-ext", "mpif-config", "mpif", "mpi", "mpi_portable_platform"]],
+    'dirs': [],
+}
+
+moduleclass = 'mpi'

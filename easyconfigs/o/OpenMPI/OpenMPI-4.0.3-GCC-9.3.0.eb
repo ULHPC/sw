@@ -1,0 +1,82 @@
+name = 'OpenMPI'
+version = '4.0.3'
+
+homepage = 'https://www.open-mpi.org/'
+description = """The Open MPI Project is an open source MPI-3 implementation."""
+
+toolchain = {'name': 'GCC', 'version': '9.3.0'}
+
+source_urls = ['https://www.open-mpi.org/software/ompi/v%(version_major_minor)s/downloads']
+sources = [SOURCELOWER_TAR_GZ]
+checksums = ['6346bf976001ad274c7e018d6cc35c92bbb9426d8f7754fac00a17ea5ac8eebc']
+
+
+# needed for --with-verbs
+#osdependencies = [(
+#    'libibverbs-dev',
+#    'libibverbs-devel',
+#    'rdma-core-devel'
+#)]
+
+dependencies = [
+    ('zlib', '1.2.11'),
+    ('hwloc', '2.2.0'),
+    ('UCX', '1.8.0'),
+]
+
+# to enable SLURM integration (site-specific)
+# See also CSCS version https://github.com/easybuilders/CSCS/blob/master/easybuild/easyconfigs/o/OpenMPI/OpenMPI-4.0.3-GCC-8.3.0.eb
+configopts = (
+    "--enable-static "
+    "--enable-shared "
+    "--enable-mpi-cxx "
+    "--with-zlib "
+    "--with-hwloc "
+    "--with-pmi "
+    "--with-pmix=external "
+    "--with-libevent=/usr "
+    "--without-verbs "
+    "--with-slurm "
+    "--without-ofi "
+    "--with-ucx=${EBROOTUCX} "
+    "--without-mxm "
+    "--without-psm2 "
+    "--without-libfabric "
+    "--without-alps "
+    "--without-tm "
+    "--without-loadleveler "
+    "--disable-memchecker "
+    "--enable-dlopen "
+    "--enable-cxx-exceptions "
+    "--enable-mca-no-build=btl-uct "
+    "--without-lsf "
+    "--without-sge "
+    "--without-moab "
+    "--enable-mpirun-prefix-by-default "
+)
+
+
+postinstallcmds = [
+    "sed -i -e '50 i mtl=^ofi' %(installdir)s/etc/%(namelower)s-mca-params.conf",
+    "sed -i -e '50 i pml=ucx' %(installdir)s/etc/%(namelower)s-mca-params.conf",
+]
+
+
+modtclfooter = """
+    setenv UCX_TLS rc_x,ud_x,mm,shm,cma
+"""
+
+local_libs = ["mpif_mpifh", "mpi", "ompitrace", "open-pal", "open-rte"]
+sanity_check_paths = {
+    'files': [
+        ["bin/%s" % local_binfile 
+        for local_binfile in ["ompi_info","opal_wrapper","orterun"]] +
+        ["lib/lib%s.%s" % (local_libfile, SHLIB_EXT) for local_libfile in local_libs] +
+        ["include/%s.h" % local_x 
+        for local_x in ["mpi-ext","mpif-config","mpif","mpi","mpi_portable_platform"]]
+    ],
+    'dirs': [],
+}
+
+
+moduleclass = 'mpi'

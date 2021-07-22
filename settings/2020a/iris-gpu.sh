@@ -9,6 +9,6 @@ TOP_DIR="$(cd "$( dirname "${BASH_SOURCE[0]}" )" && git rev-parse --show-topleve
 
 export LOCAL_RESIF_ARCH=gpu
 
-if [ -f "${TOP_DIR}/settings/2019b/iris.sh" ]; then
-    . ${TOP_DIR}/settings/2019b/iris.sh
+if [ -f "${TOP_DIR}/settings/2020a/iris.sh" ]; then
+    . ${TOP_DIR}/settings/2020a/iris.sh
 fi

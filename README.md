@@ -1,4 +1,4 @@
-**IMPORTANT: Public export toward this repository IN PROGRESS, some files will be missing until this operation is completed and this banner disappears** 
+**IMPORTANT: Public export toward this repository IN PROGRESS, some files will be missing until this operation is completed and this banner disappears**
 
 ![By ULHPC](https://img.shields.io/badge/by-ULHPC-blue.svg) [![Licence](https://img.shields.io/badge/license-GPL--3.0-blue.svg)](http://www.gnu.org/licenses/gpl-3.0.html) [![GitHub issues](https://img.shields.io/github/issues/ULHPC/sw.svg)](https://github.com/ULHPC/sw/issues/) [![Github](https://img.shields.io/badge/sources-github-green.svg)](https://github.com/ULHPC/sw/) [![GitHub forks](https://img.shields.io/github/forks/ULHPC/sw?style=flat-square)](https://github.com/ULHPC/sw)
 
@@ -13,6 +13,31 @@
 __User Software Management for [Uni.lu HPC](https://hpc.uni.lu) Facility based on the RESIF 3.0 framework__
 
 This is the **Public** repository exposing the main scripts, concepts and documentation facilitating the dissemination of our concepts.
+
+[Accepted paper](https://orbilu.uni.lu/handle/10993/47115) describing RESIF3 concepts and architecture was presented during [ACM PEARC'21](https://pearc.acm.org/pearc21/) [1] -- [doi](https://dl.acm.org/doi/10.1145/3437359.3465600) | [orbilu](https://orbilu.uni.lu/handle/10993/47115)
+
+> [1] S. Varrette, E. Kieffer, F. Pinel, E. Krishnasamy, S. Peter, H. Cartiaux, and X. Besseron, "_RESIF 3.0: Toward a Flexible & Automated Management of User Software Environment on HPC facility_", in ACM Practice and Experience in Advanced Research Computing ([PEARC'21](https://pearc.acm.org/pearc21/)), Virtual Event, 2021.
+
+[![](slides/2021/ACM-PEARC21/cover.png)](slides/2021/ACM-PEARC21/slides_acm-pearc21-resif3.pdf)
+
+
+### BibTex entry
+
+      ```bibtex
+      @InProceedings{VKPKPCB_PEARC21,
+        author =       {S. Varrette and E. Kieffer and F. Pinel and E. Krishnasamy and S. Peter and H. Cartiaux and X. Besseron},
+        title =        {{RESIF 3.0: Toward a Flexible & Automated Management of User Software Environment on HPC facility}},
+        booktitle =    {ACM Practice and Experience in Advanced Research Computing (PEARC'21)},
+        year =         {2021},
+        publisher =    {Association for Computing Machinery (ACM)},
+        OPTseries =    {{PEARC'21}},
+        month =        {July},
+        address =      {Virtual Event},
+        doi =          {10.1145/3437359.3465600},
+        isbn =         {978-1-4503-8292-2/21/07},
+        url =          {https://pearc.acm.org/pearc21/},
+      },
+      ```
 
 ## Installation / Repository Setup
 
@@ -51,15 +76,9 @@ __Post setup checks (on supercomputer login node)__
 When repeating the setup on the cluster, you can check that you are ready if the following commands should succeed:
 
 ``` bash
-### On iris, go on a broadwell node
-si -C broadwell
-# OR for skylake
-si -C skylake
-# OR for GPU node
-si-gpu
-
-source settings/iris.sh
-#.     settings/iris-gpu.sh  # on GPU
+### On iris, this will go on a broadwell node
+./scripts/get-interactive-job
+source settings/${ULHPC_CLUSTER}.sh
 # enable SSH agent
 eval "$(ssh-agent)"
 ssh-add ~/.ssh/id_rsa
@@ -72,8 +91,9 @@ make fork-easyconfigs-update
 eb --check-github   # ONLY new-pr and update-pr should FAIL
 # reason is that most probably you don't want the ssh key on the cluster authorized
 # to push on ULHPC fork
-# kill agent
-eval "$(ssh-agent -k)"
+eval "$(ssh-agent -k)"  # ONLY new-pr and update-pr should FAIL
+# reason is that most probably you don't want the ssh key on the cluster authorized
+# to push on ULHPC fork
 ```
 
 ## Documentation
@@ -88,11 +108,48 @@ You might wish to generate locally the docs:
      - Alternatively, you can run `make doc` at the root of the repository.
 * (eventually) build the full documentation locally (in the `site/` directory) by running `mkdocs build`.
 
+## Software set organizations
+
+See [`docs/swsets.md`](docs/swsets.md).
+
+Software sets holds a categorised list of software, defined as Module [`Bundle`](https://easybuild.readthedocs.io/en/latest/version-specific/generic_easyblocks.html#bundle) for the ULHPC environment holding the dependencies of hierarchical bundles structured under `easyconfigs/u` as follows:
+
+```bash
+├── ULHPC/[...]-<version>.eb    #### === Default global bundle for 'regular' nodes ===
+│   ├── ULHPC-toolchains/[...]-<version>.eb ### Toolchains, compilers, debuggers, programming languages...
+│   ├── ULHPC-bio/[...]-<version>.eb        ### Bioinformatics, biology and biomedical
+│   ├── ULHPC-cs/[...]-<version>.eb         ### Computational science, including:
+│   └── [...]
+└── ULHPC-gpu/[...]-<version>.eb #### === Specific GPU versions compiled under {foss,intel}cuda toolchains ===
+```
+
+See [`easyconfigs/u/ULHPC*`](easyconfigs/u/)
+
+![](docs/images/resif_bundles.png)
+
+A strong versioning policy is enforced, which fix the core component versions of the bundles.
+
+![](docs/images/resif_swsets_toolchains_version.png)
 
 ## User Software builds
 
 Slurm launchers are provided under `scripts/`  to facilitate software builds.
-A GNU screen configuration file is provided to quickly bootstrap the appropriate tabs:
+
+**`/!\ IMPORTANT`** RESIF 3 supports 3 operation modes depicted below:
+
+| Operation Mode                       | Architecture    | Launcher script                                                                |
+|----------------------                |------------     |----------------------------------------------------------------                |
+| Easybuild bootstrap/update           | *               | `setup.sh`                                                                     |
+| _Home_/_Testing_ builds              | default         | `[sbatch] ./scripts/[<version>]/launcher-test-build-cpu.sh`                    |
+|                                      | CPU non-default | `[sbatch] ./scripts/[<version>]/launcher-test-build-cpu-<arch>.sh`             |
+|                                      | GPU optimized   | `[sbatch] ./scripts/[<version>]/launcher-test-build-gpu.sh`                    |
+| _Production_ `<version>` builds      | default         | `[sbatch] ./scripts/prod/launcher-resif-prod-build-cpu.sh        -v <version>` |
+|                                      | CPU non-default | `[sbatch] ./scripts/prod/launcher-resif-prod-build-cpu-<arch>.sh -v <version>` |
+|                                      | GPU optimized   | `[sbatch] ./scripts/prod/launcher-resif-prod-build-gpu.sh        -v <version>` |
+
+**See [`docs/build.md`](docs/build.md) for more details**
+
+_Note_: for convenience, a GNU screen configuration file [`config/screenrc`](config/screenrc) is provided to quickly bootstrap the appropriate tabs:
 
 ```bash
 screen -c config/screenrc
@@ -111,91 +168,24 @@ screen -c config/screenrc
 #    ssh aion
 #    ./scripts/get-interactive-job
 ```
+
 Don't forget to kill your ssh agent when you have finish: `eval "$(ssh-agent -k)"`
 
-
-### Testing Builds (project `sw`)
-
-You can test builds under `/work/projects/sw/resif` (`$LOCAL_RESIF_ROOT_DIR`) under your ULHPC account (assuming you belong to the group `sw`) with the launcher scripts `scripts/launcher-test-build-*`.
-
-Software and modules will be installed under the `local` software set (`$LOCAL_RESIF_ENVIRONMENT`) i.e. under `/work/projects/sw/resif/iris/local/<arch>`.
-_Note:_ The build command is `sg sw -c "eb [...] -r --rebuild"` (to enforce group ownership to the `sw` project -- see [docs](https://hpc-docs.uni.lu/data/project/)).
-
-| Mode        | Arch.       | Launcher                                       | Settings                      |
-|-------------|-------------|------------------------------------------------|-------------------------------|
-| Local Tests | `broadwell` | `./scripts/launcher-test-build-cpu.sh`         | `source settings/iris.sh`     |
-| Local Tests | `skylake`   | `./scripts/launcher-test-build-cpu-skylake.sh` | `source settings/iris.sh`     |
-| Local Tests | `gpu`       | `./scripts/launcher-test-build-gpu.sh`         | `source settings/iris-gpu.sh` |
-
-You may want to test a build **against** a production software set (Ex: 2019b) in which case you **MUST** use the `-v <version>` option:
-
-```
-[sbatch] ./scripts/launcher-test-build-{cpu,cpu-skylake,gpu}.sh -v 2019b [...]
-```
-You can also decide to target a private environment with `-e <name>` (Ex: 2019b) to ensure the builds goes into a dedicated (separated) directory, note however that you need to install EB into this directory.
-To facilitate such tests, dedicated launchers scripts have been created under `./scripts/<version>/launcher-test-build-*`
-
-| Mode                            | Arch.       | Launcher                                                 | Settings                                |
-|---------------------------------|-------------|----------------------------------------------------------|-----------------------------------------|
-| Local Tests `<version>` release | `broadwell` | `./scripts/<version>/launcher-test-build-cpu.sh`         | `source settings/<version>/iris.sh`     |
-| Local Tests `<version>` release | `skylake`   | `./scripts/<version>/launcher-test-build-cpu-skylake.sh` | `source settings/<version>/iris.sh`     |
-| Local Tests `<version>` release | `gpu`       | `./scripts/<version>/launcher-test-build-gpu.sh`         | `source settings/<version>/iris-gpu.sh` |
-
-For more details, see [`docs/build.md`](docs/build.md)
-
-### Production builds (`resif` user)
-
-**Production** builds **MUST** be run as `resif` using the launcher scripts under `scripts/prod/*`.
-In particular, to generate builds for the `<version>` software set:
-
-```bash
-# /!\ ADAPT <version>
-[sbatch] ./scripts/prod/launcher-resif-prod-build-{cpu,cpu-skylake,gpu}.sh -v <version> [...]
-```
-
-Software and modules will be installed under `/opt/apps/resif` (`$LOCAL_RESIF_ROOT_DIR`) -- See [Technical Docs](https://hpc-docs.uni.lu/environment/modules/#ulhpc-modulepath).
-
-![](https://hpc-docs.uni.lu/environment/images/ULHPC-software-stack.png)
-
+In all cases, **production** builds **MUST** be run as `resif` using the launcher scripts under `scripts/prod/*`.
+Software and modules will be installed in that case under `/opt/apps/resif` (`$LOCAL_RESIF_ROOT_DIR`) -- See [Technical Docs](https://hpc-docs.uni.lu/environment/modules/#ulhpc-modulepath).
 You **MUST BE VERY CAREFUL** when running these scripts as they alter the production environment.
 
-| Mode           | Arch.       | Launcher                                                         | Settings                                     |
-|----------------|-------------|------------------------------------------------------------------|----------------------------------------------|
-| **Prod** build | `broadwell` | `./scripts/prod/launcher-prod-build-cpu.sh         -v <version>` | `source settings/prod/<version>/iris.sh`     |
-| **Prod** build | `skylake`   | `./scripts/prod/launcher-prod-build-cpu-skylake.sh -v <version>` | `source settings/prod/<version>/iris.sh`     |
-| **Prod** build | `gpu`       | `./scripts/prod/launcher-prod-build-gpu.sh         -v <version>` | `source settings/prod/<version>/iris-gpu.sh` |
+The final organizations of the software and modules is depicted below:
 
-See [`docs/build.md`](docs/build.md) for more details.
+![](https://hpc-docs.uni.lu/environment/images/ULHPC-software-stack.png)
 
 ## Workflow and ULHPC Bundle Development guidelines
 
 You first need to review the expected [Git workflow](docs/contributing/git-flow.md)
 
-See [`docs/workflow.md`](docs/workflow.md)
+![](docs/contributing/ULHPC-git-workflow.png)
 
-## Submitting working Easyconfigs to easybuilders
-
-See [`docs/contributing/`](docs/contributing/README.md)
-
-To limit the explosion of custom easyconfigs as was done in the past, the key objective of this project is to **minimize** the number of custom easyconfigs to the _strict_ minimum and thus to submit a maximum of easyconfigs to the community for integration in the official [`easybuilders/easybuild-easyconfigs`](https://github.com/easybuilders/easybuild-easyconfigs) repository.
-A set of helper scripts are provided to facilitate this operation.
-
-```bash
-# Creating a new pull requests ON LAPTOP
-./scripts/PR-create  easyconfigs/<letter>/<software>/<filename>.eb
-
-# Complete it with a successfull test report ON IRIS
-sbatch ./scripts/PR-rebuild-upload-test-report.sh <ID>
-# (eventually) Update/complete the pull-request with new version/additional EB files
-eb --update-pr <ID> <file>.eb --pr-commit-msg "<message>"
-
-# Repo cleanup upon merged pull-request
-./scripts/PR-close <ID>
-```
-
-## Easyconfigs suggestion
-
-To add a new software to one of the ULHPC bundle module, you need to find and eventually adapt an existing Easyconfig file. Searching such files can be done using either `eb -S <pattern>`, or via the provided script `./scripts/suggest-easyconfigs <pattern>` which
+To add a new software to one of the ULHPC bundle module, you need to find and eventually adapt an existing Easyconfig file. Searching such files can be done using either `eb -S <pattern>`, or via the provided script [`./scripts/suggest-easyconfigs [-v <version>] <pattern>`](scripts/suggest-easyconfigs) which
 
 1. search for Easyconfigs matching the proposed pattern, sorted by increasing version (`sort -V`)
 2. check among those easyconfigs is any would be available for the target toolchain as that's probably the one you should use
@@ -218,6 +208,31 @@ Total:        7 entries
 ... potential exact match for 2019b toolchain
 PAPI-6.0.0-GCCcore-8.3.0.eb
  --> suggesting 'PAPI-6.0.0-GCCcore-8.3.0.eb'
+```
+
+See also [`docs/workflow.md`](docs/workflow.md) for more details.
+
+## Submitting working Easyconfigs to easybuilders
+
+See [`docs/contributing/`](docs/contributing/README.md)
+
+To limit the explosion of custom easyconfigs as was done in the past, the key objective of this project is to **minimize** the number of custom easyconfigs to the _strict_ minimum and thus to submit a maximum of easyconfigs to the community for integration in the official [`easybuilders/easybuild-easyconfigs`](https://github.com/easybuilders/easybuild-easyconfigs) repository.
+A set of helper scripts are provided to facilitate this operation -- Typical workflow:
+
+```bash
+# Creating a new pull requests (typically ion your laptop)
+./scripts/PR-create -n easyconfigs/<letter>/<software>/<filename>.eb    # Dry-run
+./scripts/PR-create easyconfigs/<letter>/<software>/<filename>.eb
+# Complete it with a successfull test report ON IRIS/AION
+sbatch ./scripts/PR-rebuild-upload-test-report.sh <ID>
+
+# (eventually) Update/complete the pull-request with new version/additional EB files
+eb --update-pr <ID> <file>.eb --pr-commit-msg "<message>" # use native easybuild command here
+#  Update your local easyconfigs from remote PR commits
+./scripts/update-from-PR [-n] <ID>
+
+# Repo cleanup upon merged pull-request
+./scripts/PR-close [-n] <ID>
 ```
 
 ## Issues / Feature request
