@@ -1,4 +1,4 @@
-**IMPORTANT: Public export toward this repository IN PROGRESS, some files will be missing until this operation is completed and this banner disappears** 
+**IMPORTANT: Public export toward this repository IN PROGRESS, some files will be missing until this operation is completed and this banner disappears**
 
 ![By ULHPC](https://img.shields.io/badge/by-ULHPC-blue.svg) [![Licence](https://img.shields.io/badge/license-GPL--3.0-blue.svg)](http://www.gnu.org/licenses/gpl-3.0.html) [![GitHub issues](https://img.shields.io/github/issues/ULHPC/sw.svg)](https://github.com/ULHPC/sw/issues/) [![Github](https://img.shields.io/badge/sources-github-green.svg)](https://github.com/ULHPC/sw/) [![GitHub forks](https://img.shields.io/github/forks/ULHPC/sw?style=flat-square)](https://github.com/ULHPC/sw)
 
@@ -13,6 +13,31 @@
 __User Software Management for [Uni.lu HPC](https://hpc.uni.lu) Facility based on the RESIF 3.0 framework__
 
 This is the **Public** repository exposing the main scripts, concepts and documentation facilitating the dissemination of our concepts.
+
+[Accepted paper](https://orbilu.uni.lu/handle/10993/47115) describing RESIF3 concepts and architecture was presented during [ACM PEARC'21](https://pearc.acm.org/pearc21/) [1] -- [doi](https://dl.acm.org/doi/10.1145/3437359.3465600) | [orbilu](https://orbilu.uni.lu/handle/10993/47115)
+
+> [1] S. Varrette, E. Kieffer, F. Pinel, E. Krishnasamy, S. Peter, H. Cartiaux, and X. Besseron, "_RESIF 3.0: Toward a Flexible & Automated Management of User Software Environment on HPC facility_", in ACM Practice and Experience in Advanced Research Computing ([PEARC'21](https://pearc.acm.org/pearc21/)), Virtual Event, 2021.
+
+[![](slides/2021/ACM-PEARC21/cover.png)](slides/2021/ACM-PEARC21/slides_acm-pearc21-resif3.pdf)
+
+
+### BibTex entry
+
+      ```bibtex
+      @InProceedings{VKPKPCB_PEARC21,
+        author =       {S. Varrette and E. Kieffer and F. Pinel and E. Krishnasamy and S. Peter and H. Cartiaux and X. Besseron},
+        title =        {{RESIF 3.0: Toward a Flexible & Automated Management of User Software Environment on HPC facility}},
+        booktitle =    {ACM Practice and Experience in Advanced Research Computing (PEARC'21)},
+        year =         {2021},
+        publisher =    {Association for Computing Machinery (ACM)},
+        OPTseries =    {{PEARC'21}},
+        month =        {July},
+        address =      {Virtual Event},
+        doi =          {10.1145/3437359.3465600},
+        isbn =         {978-1-4503-8292-2/21/07},
+        url =          {https://pearc.acm.org/pearc21/},
+      },
+      ```
 
 ## Installation / Repository Setup
 
@@ -51,15 +76,9 @@ __Post setup checks (on supercomputer login node)__
 When repeating the setup on the cluster, you can check that you are ready if the following commands should succeed:
 
 ``` bash
-### On iris, go on a broadwell node
-si -C broadwell
-# OR for skylake
-si -C skylake
-# OR for GPU node
-si-gpu
-
-source settings/iris.sh
-#.     settings/iris-gpu.sh  # on GPU
+### On iris, this will go on a broadwell node
+./scripts/get-interactive-job
+source settings/${ULHPC_CLUSTER}.sh
 # enable SSH agent
 eval "$(ssh-agent)"
 ssh-add ~/.ssh/id_rsa
@@ -72,8 +91,9 @@ make fork-easyconfigs-update
 eb --check-github   # ONLY new-pr and update-pr should FAIL
 # reason is that most probably you don't want the ssh key on the cluster authorized
 # to push on ULHPC fork
-# kill agent
-eval "$(ssh-agent -k)"
+eval "$(ssh-agent -k)"  # ONLY new-pr and update-pr should FAIL
+# reason is that most probably you don't want the ssh key on the cluster authorized
+# to push on ULHPC fork
 ```
 
 ## Documentation
@@ -88,6 +108,28 @@ You might wish to generate locally the docs:
      - Alternatively, you can run `make doc` at the root of the repository.
 * (eventually) build the full documentation locally (in the `site/` directory) by running `mkdocs build`.
 
+## Software set organizations
+
+See [`docs/swsets/`](docs/swsets/README.md).
+
+Software sets holds a categorised list of software, defined as Module [`Bundle`](https://easybuild.readthedocs.io/en/latest/version-specific/generic_easyblocks.html#bundle) for the ULHPC environment holding the dependencies of hierarchical bundles structured as follows:
+
+```bash
+├── ULHPC-<version>   #### === Default global bundle for 'regular' nodes ===
+│   ├── ULHPC-toolchains-<version>### Toolchains, compilers, debuggers, programming languages...
+│   ├── ULHPC-bio-<version>       ### Bioinformatics, biology and biomedical
+│   ├── ULHPC-cs-<version>        ### Computational science, including:
+│   └── [...]
+└── ULHPC-gpu-<version> #### === Specific GPU versions compiled under {foss,intel}cuda toolchains ===
+```
+
+See [`easyconfigs/u/ULHPC*`](easyconfigs/u/)
+
+![](docs/images/resif_bundles.png)
+
+A strong versioning policy is enforced, which fix the core component versions of the bundles.
+
+![](docs/images/resif_swsets_toolchains_version.png)
 
 ## User Software builds
 
