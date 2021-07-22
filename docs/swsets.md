@@ -12,7 +12,7 @@ It also facilitates the _reproducible_ and _self-contained_ deployment of the co
 
 **[Technical Documentation](https://hpc-docs.uni.lu/environment/modules/#ulhpc-toolchains-and-software-set-versioning)**
 
-| __Name__  | __Type__  | 2019[a] (_deprecated_) |  __2019b__ (`old`) |  __2020a__ (`prod`) | __2021a*__ (`devel`) |
+| __Name__  | __Type__  | 2019(a) (_deprecated_)  |  __2019b__ (`old`) |  __2020a__ (`prod`) | __2021a*__ (`devel`) |
 |-----------|-----------|------------------------|--------------------|---------------------|----------------------|
 | `GCCCore` | compiler  |                  8.2.0 |              8.3.0 |               9.3.0 |               10.3.0 |
 | `foss`    | toolchain |                  2019a |              2019b |               2020a |                2021a |
@@ -33,37 +33,49 @@ These versions define completely the environment set for ULHPC software set, str
 
 The dependencies for User Software Set are organized as follows:
 
-```
-├── ULHPC-<version>   #### === Default global bundle for 'regular' nodes ===
-│   ├── ULHPC-toolchains-<version>### Toolchains, compilers, debuggers, programming languages...
-│   │                               #    - toolchain: EasyBuild toolchains
-│   │                               #    - compiler:  Compilers
-│   │                               #    - debugger:  Debuggers
-│   │                               #    - devel:     Development tools
-│   │                               #    - lang:      Languages and programming aids
-│   │                               #    - mpi:       MPI stacks
-│   │                               #    - lib:       General purpose libraries (incl. Communication Libraries, I/O Libraries...)
-│   │                               #    - numlib:    Numerical Libraries
-│   │                               #    - system:    System utilities (e.g. highly depending on system OS and hardware)
-│   ├── ULHPC-bd-<version>        ### Big Data Analytics
-│   ├── ULHPC-bio-<version>       ### Bioinformatics, biology and biomedical
-│   ├── ULHPC-cs-<version>        ### Computational science, including:
-│   │                               #    - cae:       Computer Aided Engineering (incl. CFD)
-│   │                               #    - chem:      Chemistry, Computational Chemistry and Quantum Chemistry
-│   │                               #    - data:      Data management & processing tools
-│   │                               #    - geo:       Earth Sciences
-│   │                               #    - quantum:   Quantum Computing
-│   │                               #    - phys: Physics and physical systems simulations
-│   │                               #
-│   ├── ULHPC-dl-<version>        ### AI / Deep Learning / Machine Learning
-│   ├── ULHPC-math-<version>      ### High-level mathematical software
-│   ├── ULHPC-perf-<version>      ### Performance evaluation / Benchmarks
-│   ├── ULHPC-tools-<version>     ### Misc tools, incl.
-│   │                               #    - perf:      Performance tools
-│   │                               #    - tools:     General purpose tools
-│   └── ULHPC-visu-<version>      ### Visualization, plotting, documentation and typesetting
-│
-└── ULHPC-gpu-<version> #### === Specific GPU versions ===
+![](images/resif_bundles.png)
+
+In details, under `easyconfigs/u`, you will find the following directory/file structure:
+
+```bash
+easyconfigs/u
+  ├── ULHPC                 #### === Default global bundle for 'regular' nodes ===
+  │   └── ULHPC-<version>
+  |
+  ├── ULHPC-toolchains      ### Toolchains, compilers, debuggers, programming languages...
+  │   └── ULHPC-toolchains-<version>.eb #  - toolchain: EasyBuild toolchains
+  │                                     #  - compiler:  Compilers
+  │                                     #  - debugger:  Debuggers
+  │                                     #  - devel:     Development tools
+  │                                     #  - lang:      Languages and programming aids
+  │                                     #  - mpi:       MPI stacks
+  │                                     #  - lib:       General purpose libraries (incl. Communication Libraries, I/O Libraries...)
+  │                                     #  - numlib:    Numerical Libraries
+  │                                     #  - system:    System utilities (e.g. highly depending on system OS and hardware)
+  ├── ULHPC-bd               ### Big Data Analytics
+  │   └── ULHPC-bd-<version>.eb
+  ├── ULHPC-bio              ### Bioinformatics, biology and biomedical
+  │   └── ULHPC-bio-<version>.eb
+  ├── ULHPC-cs               ### Computational science, including:
+  │   └── ULHPC-cs-<version>.eb         #   - cae:       Computer Aided Engineering (incl. CFD)
+  │                                     #   - chem:      Chemistry, Computational Chemistry and Quantum Chemistry
+  │                                     #   - data:      Data management & processing tools
+  │                                     #   - geo:       Earth Sciences
+  │                                     #   - quantum:   Quantum Computing
+  │                                     #   - phys: Physics and physical systems simulations
+  ├── ULHPC-dl               ### AI / Deep Learning / Machine Learning
+  │   └── ULHPC-dl-<version>.eb
+  ├── ULHPC-math             ### High-level mathematical software
+  │   └── ULHPC-math-<version>.eb
+  ├── ULHPC-perf             ### Performance evaluation / Benchmarks
+  │   └── ULHPC-perf-<version>.eb
+  ├── ULHPC-tools            ### Misc general purpose tools
+  │   └── ULHPC-tools-<version>.eb      # - perf:      Performance tools
+  ├── ULHPC-visu             ### Visualization, plotting, documentation and typesetting
+  │   └── ULHPC-visu-<version>.eb
+  │
+  └── ULHPC-gpu    #### === Specific GPU versions ===
+      └── ULHPC-gpu-<version>.eb
 ```
 
 They actually inherits  and aggregate from the default [module classes](https://easybuild.readthedocs.io/en/latest/Writing_easyconfig_files.html#module-class):

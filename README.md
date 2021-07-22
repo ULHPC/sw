@@ -110,7 +110,7 @@ You might wish to generate locally the docs:
 
 ## Software set organizations
 
-See [`docs/swsets/`](docs/swsets/README.md).
+See [`docs/swsets.md`](docs/swsets.md).
 
 Software sets holds a categorised list of software, defined as Module [`Bundle`](https://easybuild.readthedocs.io/en/latest/version-specific/generic_easyblocks.html#bundle) for the ULHPC environment holding the dependencies of hierarchical bundles structured as follows:
 
