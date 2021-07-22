@@ -27,8 +27,8 @@ local_pyver       = '3.7.4'
 local_llvmver     = '9.0.1'
 
 dependencies = [
-    # ('Spark',  '2.4.5',     '-Python-%(pyver)s-Java-1.8', ('intel', version)), 
-    ('Spark',  '2.4.5',     '-Python-3.7.4-Java-1.8', ('intel', version)),  
+    # ('Spark',  '2.4.5',     '-Python-%(pyver)s-Java-1.8', ('intel', version)),
+    ('Spark',  '2.4.5',     '-Python-3.7.4-Java-1.8', ('intel', version)),
 ]
 
 moduleclass = 'system'

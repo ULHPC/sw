@@ -19,7 +19,7 @@ Generic Module bundle that contains all the dependencies required to enable tool
 
 toolchain = SYSTEM
 
-#syconfigs/u/ULHPC-toolchains/ULHPC-toolchains-2019b.eb See https://easybuild.readthedocs.io/en/latest/Common-toolchains.html#overview-of-common-toolchains
+# See https://easybuild.readthedocs.io/en/latest/Common-toolchains.html#overview-of-common-toolchains
 local_gccver      = '8.3.0'
 local_intelver    = '2019.5.281'
 local_binutilsver = '2.32'
@@ -66,9 +66,9 @@ dependencies = [
     ('Boost',      '1.71.0',    '', ('gompi',     version)),
     ('Boost',      '1.71.0',    '', ('iimpi',     version)),
     ('SWIG',       '4.0.1',     '', ('GCCcore',   local_gccver)),  # SW devel. tool to interface C/C++ programs
-    ('ant',        '1.10.6',    '', ('Java', '1.8')),  
-    ('tbb',        '2020.2',    '', ('GCCcore',   local_gccver)),  
-    ('sparsehash', '2.0.3',     '', ('GCCcore',   local_gccver)),  
+    ('ant',        '1.10.6',    '', ('Java', '1.8')),
+    ('tbb',        '2020.2',    '', ('GCCcore',   local_gccver)),
+    ('sparsehash', '2.0.3',     '', ('GCCcore',   local_gccver)),
     ('Anaconda3',  '2020.02'),
     #---------------------------------------------------------------------------
     # Debuggers
