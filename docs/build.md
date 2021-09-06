@@ -330,11 +330,12 @@ Software and modules will be installed under `/opt/apps/resif` (`$LOCAL_RESIF_RO
 
 You **MUST BE VERY CAREFUL** when running these scripts as they alter the production environment.
 
-| Mode           | Arch.       | Launcher                                                         | Settings                                     |
-|----------------|-------------|------------------------------------------------------------------|----------------------------------------------|
-| **Prod** build | `broadwell` | `./scripts/prod/launcher-prod-build-cpu.sh         -v <version>` | `source settings/prod/<version>/iris.sh`     |
-| **Prod** build | `skylake`   | `./scripts/prod/launcher-prod-build-cpu-skylake.sh -v <version>` | `source settings/prod/<version>/iris.sh`     |
-| **Prod** build | `gpu`       | `./scripts/prod/launcher-prod-build-gpu.sh         -v <version>` | `source settings/prod/<version>/iris-gpu.sh` |
+| Mode                  | Arch.       | Launcher                                                         | Settings                                     |
+|-----------------------|-------------|------------------------------------------------------------------|----------------------------------------------|
+| **Prod** build `aion` | `epyc`      | `./scripts/prod/launcher-prod-build-amd.sh         -v <version>` | `source settings/prod/<version>/aion.sh`     |
+| **Prod** build `iris` | `broadwell` | `./scripts/prod/launcher-prod-build-cpu.sh         -v <version>` | `source settings/prod/<version>/iris.sh`     |
+| **Prod** build `iris` | `skylake`   | `./scripts/prod/launcher-prod-build-cpu-skylake.sh -v <version>` | `source settings/prod/<version>/iris.sh`     |
+| **Prod** build `iris` | `gpu`       | `./scripts/prod/launcher-prod-build-gpu.sh         -v <version>` | `source settings/prod/<version>/iris-gpu.sh` |
 
 ### Preliminary: configure `ULHPC/sw` repository for the `resif` user
 
@@ -360,3 +361,45 @@ direnv allow .
 make setup-python
 ```
 Post-check iris: you need also to prepare the `/opt/apps/resif/licenses_keys.yaml` as per [hook configurations](environment.md)
+
+### Production Builds on `aion`
+
+In the appropriate screen/tmux tabs:
+
+```bash
+sbatch ./scripts/prod/launcher-prod-build-amd.sh  -v <version>  [ toolchains | bd | bio | cs | dl | math | tools ]
+tail -s1 -f logs/RESIF-Prod-CPU-epyc-<jobid>.out
+```
+
+### Production Builds on `iris`
+
+In the appropriate screen/tmux tabs:
+
+```bash
+# Broadwell
+sbatch ./scripts/prod/launcher-prod-build-cpu.sh  -v <version>  [ toolchains | bd | bio | cs | dl | math | tools ]
+tail -s1 -f logs/RESIF-Prod-CPU-broadwell-<jobid>.out
+# Skylake
+sbatch ./scripts/prod/launcher-prod-build-cpu-skylake.sh  -v <version>  [ toolchains | bd | bio | cs | dl | math | tools ]
+tail -s1 -f logs/RESIF-Prod-CPU-skylake-<jobid>.out
+# GPU
+sbatch ./scripts/prod/launcher-prod-build-gpu.sh  -v <version>
+tail -s1 -f logs/RESIF-Prod-GPU-<jobid>.out
+```
+
+## Post-installation
+
+Some software require a manual post-install run as root.
+
+### Singularity
+
+```bash
+# next steps after installation
+# INSTALLATION_PATH=your_installation_path
+# chown root:root $INSTALLATION_PATH/Singularity/*/etc/singularity/singularity.conf
+# chown root:root $INSTALLATION_PATH/Singularity/*/etc/singularity/capability.json
+# chown root:root $INSTALLATION_PATH/Singularity/*/etc/singularity/ecl.toml
+# chown root:root $INSTALLATION_PATH/Singularity/*/libexec/singularity/bin/*-suid
+# chmod 4755 $INSTALLATION_PATH/Singularity/*/libexec/singularity/bin/*-suid
+# chmod +s $INSTALLATION_PATH/Singularity/*/libexec/singularity/bin/*-suid
+```

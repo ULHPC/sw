@@ -60,6 +60,115 @@ git pull
 make fork-easyconfigs-update
 ```
 
+## Preparing a new Bundle
+
+You should start with the **previous** stable bundle and adapt from it with the appropriate versions of the software listed.
+**ALWAYS start with the toolchains bundle**
+
+### Copy and adapt from the last stable bundle
+
+Ex: to prepare the 2020b version from 2020a:
+
+```bash
+cd path/to/sw
+make up
+make fork-easyconfigs-update     # Always keep up to date the latests configs
+git-flow feature start <version> # In this case: <version>=2020b
+cd easyconfigs/u/ULHPC-toolchains
+cp ULHPC-toolchains-2020a.eb ULHPC-toolchains-2020b.eb # ADAPT accordingly
+```
+
+Then you should adapt all the `local_` variables with the appropriate versions:
+
+```bash
+# /!\ ADAPT <version> accordingly
+$ ./scripts/suggest-easyconfigs -v <version> -s GCC binutils Python LLVM
+# In this case:
+$ ./scripts/suggest-easyconfigs -v 2020b -s GCC binutils Python LLVM
+               GCC: GCC-10.2.0.eb
+          binutils: binutils-2.35-GCCcore-10.2.0.eb
+            Python: Python-3.8.6-GCCcore-10.2.0.eb
+              LLVM: LLVM-11.0.0-GCCcore-10.2.0.eb
+```
+
+Then make a quick and dirty check of the _probable_ good versions of each software listed in the bundle as follows:
+
+```bash
+# Extract space-separated list of the software listed as dependencies
+# /!\ ADAPT <version> accordingly
+$ cat easyconfigs/u/ULHPC-toolchains/ULHPC-toolchains-<version>.eb| egrep "\s+\('" | cut -d "'" -f 2 | uniq | xargs echo
+# ... and use it in summary mode (-s) with ./scripts/suggest-easyconfigs -v <version> -s [...]
+# Ex for 2020b
+bundle=toolchains; version=2020b; ./scripts/suggest-easyconfigs -v $version -s $(cat easyconfigs/u/ULHPC-${bundle}/ULHPC-${bundle}-${version}.eb| egrep "\s+\('" | cut -d "'" -f 2 | uniq | xargs echo)
+
+           GCCcore: GCCcore-10.2.0.eb
+              foss: foss-2020b.eb
+             intel: intel-2020b.eb
+              LLVM: LLVM-11.0.0-GCCcore-10.2.0.eb
+             Clang: Clang-11.0.1-gcccuda-2020b.eb
+              NASM: NASM-2.15.05-GCCcore-10.2.0.eb
+             CMake: CMake-3.18.4-GCCcore-10.2.0.eb
+           Doxygen: Doxygen-1.8.20-GCCcore-10.2.0.eb
+           ReFrame: ReFrame-3.6.3.eb
+             Spack: Spack-0.12.1.eb
+           OpenMPI: OpenMPI-4.1.0-GCC-10.2.0.eb
+                Go: Go-1.16.6.eb
+              Java: Java-16.0.1.eb
+             Julia: Julia-1.6.2-linux-x86_64.eb
+              Perl: Perl-5.32.0-GCCcore-10.2.0-minimal.eb
+            Python: Python-3.8.6-GCCcore-10.2.0.eb
+              Ruby: Ruby-2.7.2-GCCcore-10.2.0.eb
+              Rust: Rust-1.52.1-GCCcore-10.3.0.eb
+                 R: R-keras-2.4.0-foss-2020b-R-4.0.4.eb
+             Boost: Boost.Python-1.74.0-GCC-10.2.0.eb
+              SWIG: SWIG-4.0.2-GCCcore-10.2.0.eb
+               ant: ant-1.10.9-Java-11.eb
+               tbb: tbb-2020.3-GCCcore-10.2.0.eb
+        sparsehash: sparsehash-2.0.4-GCCcore-10.2.0.eb
+             Spark: Spark-3.1.1-fosscuda-2020b.eb
+         Anaconda3: Anaconda3-2021.05.eb
+               GDB: GDB-10.1-GCCcore-10.2.0.eb
+          Valgrind: Valgrind-3.16.1-gompi-2020b.eb
+```
+It's far from being perfect but it can help to provide a good **draft** version of the bundle you can work on. When in doubt, check the list of easyconfigs with `./scripts/suggest-easyconfigs -v <version> <pattern>`. Example:
+
+```bash
+version=2020b
+./scripts/suggest-easyconfigs -v ${version} R-4 Boost Spark Anaconda3 Valgrind
+```
+
+### Lint-check the bundle style
+
+Use `eb --check-contrib <ebfile>` to check the correct parsing and dependency checks.
+Ex:
+
+```bash
+bundle=toolchains; version=2020b; eb --check-contrib ./easyconfigs/u/ULHPC-${bundle}/ULHPC-${bundle}-${version}.eb
+```
+
+### Comment out potential problematic and test builds
+
+Some software (and their dependencies) like OpenMPI will deserve a special attention so it's better at this stage to comment out them.
+Then
+
+1. Make a testing Builds (project `sw`), probably against the 2020b environment:
+
+```bash
+# Interactive tests
+./scripts/get-interactive-job
+source settings/2020b/aion.sh
+echo $EASYBUILD_PREFIX
+# OR... with passive jobs
+sbatch ./scripts/2020b/launcher-test-build-amd.sh -D toolchains
+sbatch ./scripts/2020b/launcher-test-build-amd.sh toolchains
+```
+
+   Repeat until the bundle is complete
+2. Once completed, make a production build
+
+See [`build.md`](build.md) for more details.
+
+
 ## Finding existing easyconfigs
 
 ```bash

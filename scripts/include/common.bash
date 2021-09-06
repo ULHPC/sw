@@ -1,4 +1,4 @@
-# Time-stamp: <Thu 2021-04-08 11:12 svarrette>
+# Time-stamp: <Mon 2021-09-06 08:03 svarrette>
 ################################################################################
 # Common RESIF 3.0 functions
 #
@@ -12,7 +12,10 @@ case ${LOCAL_RESIF_ENVIRONMENT} in
     20*) VERSION=${LOCAL_RESIF_ENVIRONMENT};;
     *)   VERSION=;;
 esac
-ULHPC_MODULE_BUNDLES="toolchains $(ls -d ${ULHPC_EASYCONFIGS_DIR}/ULHPC-* | grep -v -E 'toolchains|gpu' | cut -d '-' -f 2 | xargs echo)"
+case "$(basename $0)$LOCAL_RESIF_ARCH" in
+    *gpu*) ULHPC_MODULE_BUNDLES="$(ls -d ${ULHPC_EASYCONFIGS_DIR}/ULHPC-gpu* | sed 's/.*ULHPC-//' | xargs echo)";;
+    *)     ULHPC_MODULE_BUNDLES="toolchains $(ls -d ${ULHPC_EASYCONFIGS_DIR}/ULHPC-* | grep -v -E 'toolchains|gpu' | cut -d '-' -f 2 | xargs echo)";;
+esac
 CMD_PREFIX=
 DRY_RUN_SHORT=
 USE_SWSET_VERSION=
@@ -22,6 +25,7 @@ print_error_and_exit() { echo "*** ERROR *** $*"; exit 1; }
 usage() {
     local help_for_prod_script=$1
     case "$(basename $0)$LOCAL_RESIF_ARCH" in
+        *epyc*)    usage_desc="Default CPU Builds compliant with all AMD archictectures in place";;
         *skylake*) usage_desc="Skylake-optimized CPU Builds";;
         *gpu*)
             ULHPC_MODULE_BUNDLES="$(ls -d ${ULHPC_EASYCONFIGS_DIR}/ULHPC-gpu* | sed 's/.*ULHPC-//' | xargs echo)";
@@ -149,7 +153,7 @@ parse_command_line_prod()
 # # load_settings <name>
 # ##
 # load_settings() {
-#     local f=${1:=iris.sh}
+#     local f=${1:-iris.sh}
 #     [ ! -d "${SETTINGS_DIR}" ] && print_error_and_exit "Cannot find settings directory"
 #     module purge || print_error_and_exit "Unable to find the module command"
 #     if [ -f "${SETTINGS_DIR}/${f}" ]; then
@@ -164,8 +168,8 @@ parse_command_line_prod()
 ##
 use_swset_modules()
 {
-    local version=${1:=${USE_SWSET_VERSION}}
-    local global_eb_prefix=/opt/apps/resif/${ULHPC_CLUSTER:=iris}/${version}
+    local version=${1:-${USE_SWSET_VERSION}}
+    local global_eb_prefix=/opt/apps/resif/${ULHPC_CLUSTER:-iris}/${version}
 
     if [ -n "${version}" ]; then
         echo "==> using/prepend (production) modules from '${version}' release for resif arch '${LOCAL_RESIF_ARCH}'"

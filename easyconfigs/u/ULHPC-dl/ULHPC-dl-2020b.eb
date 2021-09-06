@@ -1,0 +1,44 @@
+# -*- mode: python; -*-
+##
+# This file is an EasyBuild reciPY as per https://github.com/easybuilders/easybuild
+#
+# Copyright:: Copyright 2020-2021 University of Luxembourg
+# Authors::
+# * UL HPC Team <hpc-team@uni.lu>
+# License::   MIT/GPL
+
+easyblock = "Bundle"
+
+name = 'ULHPC-dl'
+version = '2020b'
+
+homepage = 'https://hpc.uni.lu/'
+description = """
+Generic Module bundle for (CPU-version) of AI / Deep Learning / 
+Machine Learning software in use on the UL HPC Facility
+"""
+
+toolchain = SYSTEM
+
+# See https://easybuild.readthedocs.io/en/latest/Common-toolchains.html#overview-of-common-toolchains
+local_gccver      = '10.2.0'
+local_intelver    = '2020.4.304'
+local_binutilsver = '2.35'
+local_pyver       = '3.8.6'
+local_pyver2      = '2.7.18'
+local_llvmver     = '11.0.0'
+local_tfver       = '2.5.0'
+
+dependencies = [
+    #-----------------------------------------------------------------------
+    # Machine Learning / Deep Learning
+    #-----------------------------------------------------------------------
+    ('Keras', '2.4.3',             '', ('foss', version)),
+    ('PyTorch', '1.9.0',           '', ('foss', version)),
+    ('PyTorch-Geometric', '1.6.3', '', ('foss', version)),
+    ('TensorFlow', '2.5.0',        '', ('foss', version)),
+    ('Theano', '1.1.2',        '-PyMC', ('foss', version)),
+    # ('Theano', '1.1.2',        '-PyMC', ('intel', version)), # stalled import at sanity check
+]
+
+moduleclass = 'system'

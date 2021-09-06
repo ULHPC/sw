@@ -26,6 +26,7 @@ export LOCAL_RESIF_ARCH=${LOCAL_RESIF_ARCH:=}
 export LOCAL_RESIF_ROOT_DIR=${LOCAL_RESIF_ROOT_DIR:=${TOP_DIR}/apps}
 
 # Easybuild stuff:
+
 # EASYBUILD_PREFIX: ${LOCAL_RESIF_ROOT_DIR}/<cluster>/<environment>/<arch>
 _EB_PREFIX="${LOCAL_RESIF_ROOT_DIR}"
 [ -n "${LOCAL_RESIF_SYSTEM_NAME}" ] && _EB_PREFIX="${_EB_PREFIX}/${LOCAL_RESIF_SYSTEM_NAME}"
@@ -114,7 +115,7 @@ for f in $(find ${TOP_DIR}/settings/custom/  -name '*.sh' -print); do
     [ -f "${f}" ] && source "$f"
 done
 # Debug time...
-#if [ -n "${DEBUG}" ]; then
+if [ -n "${DEBUG}" ]; then
     cat <<EOF
 TOP_DIR           = ${TOP_DIR}
 ----------------------------------------
@@ -138,7 +139,6 @@ MODULEPATH        = ${MODULEPATH}
 EOF
 #    sleep 1
 #    eb --show-config
-#fi
-
+fi
 
 module load tools/EasyBuild 2>/dev/null && eb --show-config || echo "/!\ WARNING: Module tools/EasyBuild NOT FOUND "
