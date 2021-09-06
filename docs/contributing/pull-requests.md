@@ -23,9 +23,11 @@ sbatch ./scripts/PR-rebuild-upload-test-report.sh <ID>
 
 # Update/complete the pull-request with new version/additional EB files
 eb --update-pr <ID> <file>.eb --pr-commit-msg "<message>"
+#  Update your local easyconfigs from PR commits
+./scripts/update-from-PR [-n] <ID>
 
 # Repo cleanup upon merged pull-request
-./scripts/close-merged-PR <ID>
+./scripts/PR-close [-n] <ID>
 ```
 
 

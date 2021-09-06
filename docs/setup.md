@@ -240,6 +240,7 @@ The default direnv expects you to have the virtual environment set in `~/venv/re
 ```bash
 python3 -m venv ~/venv/resif3
 source ~/venv/resif3/bin/activate
+pip install --upgrade pip
 ```
 
 ## Python dependencies installation
@@ -345,13 +346,13 @@ git clone git@github.com:ULHPC/easybuild-easyconfigs.git
 cd easybuild-easyconfigs
 
 # Add 'upstream' remote
-git remote add upstream https://github.com/hpcugent/easybuild-easyconfigs.git
+git remote add upstream https://github.com/easybuilders/easybuild-easyconfigs.git
 # check it
 git remote -v
 origin	git@github.com:ULHPC/easybuild-easyconfigs.git (fetch)
 origin	git@github.com:ULHPC/easybuild-easyconfigs.git (push)
-upstream	https://github.com/hpcugent/easybuild-easyconfigs.git (fetch)
-upstream	https://github.com/hpcugent/easybuild-easyconfigs.git (push)
+upstream	https://github.com/easybuilders/easybuild-easyconfigs.git (fetch)
+upstream	https://github.com/easybuilders/easybuild-easyconfigs.git (push)
 
 # checkout the branch master
 git checkout -b main  --track origin/main
