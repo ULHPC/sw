@@ -1,5 +1,5 @@
 #! /bin/bash
-# Time-stamp: <Wed 2021-04-14 17:46 svarrette>
+# Time-stamp: <Thu 2021-07-22 10:24 svarrette>
 ################################################################################
 # suggest-easyconfigs - Suggest an easyconfig for [past] software or pattern
 ################################################################################
@@ -11,8 +11,8 @@ TOP_DIR="$(cd "$( dirname "${BASH_SOURCE[0]}" )" && git rev-parse --show-topleve
 CMD_PREFIX=
 MODE=
 SUMMARY_MODE=
-TOOLCHAIN_VERSION=${RESIF_VERSION_DEVEL:2019b}
-GCC_VERSION=8.3.0
+TOOLCHAIN_VERSION=${RESIF_VERSION_DEVEL:2020a}
+GCC_VERSION=9.3.0
 
 # Software lists
 MODULES_AVAILABLE=
@@ -30,11 +30,12 @@ NAME
   passed as argument
 
 USAGE
-  $0 <pattern> # search for <pattern>
+  $0 [-v <version] <pattern> # search for <pattern>
 
 OPTIONS
   -n --dry-run:     Dry run mode
   -m --module-list: List modules available
+  -v VERSION:       Force search against toolchain version VERSION
 EOF
 }
 

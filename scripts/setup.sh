@@ -1,7 +1,7 @@
 #! /bin/bash
 ################################################################################
 # setup.sh - Bootstrap EB or update EB to the latest version
-# Time-stamp: <Wed 2021-04-14 17:36 svarrette>
+# Time-stamp: <Fri 2021-07-30 00:20 svarrette>
 #
 # Copyright (c) 2020 Sebastien Varrette <Sebastien.Varrette@uni.lu>
 #
@@ -16,6 +16,10 @@ CMD_PREFIX=
 if [ -f "${SETTINGS_DIR}/default.sh" ]; then
     . ${SETTINGS_DIR}/default.sh
 fi
+
+# Use of the EasyBuild boostrap script is DEPRECATED (since June 2021).
+# It is strongly recommended to use one of the installation methods outlined at https://docs.easybuild.io/en/latest/Installation.html instead!
+export EASYBUILD_BOOTSTRAP_DEPRECATED=1
 
 EASYBUILD_PREFIX=${EASYBUILD_PREFIX:=$HOME/.local/easybuild}
 EASYBUILD_MODULES_TOOL=${EASYBUILD_MODULES_TOOL:=LMod}
@@ -55,6 +59,8 @@ if [ -n "${EASYBUILD_PREFIX}" ]; then
     echo "=> install EasyBuild"
     ${CMD_PREFIX} python ${BOOTSTRAP_EB} $EASYBUILD_PREFIX
 fi
+
+unset EASYBUILD_BOOTSTRAP_DEPRECATED
 
 ${CMD_PREFIX} module use ${LOCAL_MODULES}
 echo "=> Using modules in ${LOCAL_MODULES}"
