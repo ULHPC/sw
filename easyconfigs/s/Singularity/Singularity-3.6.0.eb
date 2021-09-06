@@ -1,0 +1,63 @@
+easyblock = 'ConfigureMake'
+
+name = 'Singularity'
+version = '3.6.0'
+
+homepage = 'https://github.com/sylabs/singularity/'
+description = """
+              Singularity is an open source container platform designed to be
+              simple, fast, and secure.  Singularity is optimized for EPC and
+              HPC workloads, allowing untrusted users to run untrusted
+              containers in a trusted way.
+              """
+
+toolchain = {'name': 'system', 'version': 'system'} 
+
+source_urls = ['https://github.com/sylabs/singularity/releases/download/v%s/' % version]
+sources = ['singularity-%(version)s.tar.gz']
+checksums = ['b8810825510b007e3913ab94af2ada79b944e916e32402a607a3a203f0f49349']
+
+osdependencies = [
+    ('openssl-devel', 'libssl-dev', 'libopenssl-devel'),
+    ('libseccomp-devel', 'libseccomp-dev'),
+    ('cryptsetup'),
+    ('squashfs-tools')
+]
+
+builddependencies = [
+    ('Go', '1.14.1'),
+]
+
+#prebuildopts = 'export GOPATH=$(pwd):$GOPATH && '
+prebuildopts = 'mkdir -p src/github.com/sylabs && '
+prebuildopts += 'ln -sf %(builddir)s/singularity src/github.com/sylabs/singularity && '
+prebuildopts += './mconfig -p %(installdir)s -b build && '
+prebuildopts += 'cd build && '
+preinstallopts = 'cd build && '
+
+# Customize singularity.conf
+postinstallcmds = [
+    'sed -i -e "s|^mount dev = .*|mount dev = minimal|" %(installdir)s/etc/singularity/singularity.conf',
+    'sed -i -e "s|^enable fusemount = .*|enable fusemount = no|" %(installdir)s/etc/singularity/singularity.conf',
+]
+
+
+skipsteps = ['configure']
+
+sanity_check_paths = {
+    'files': ['bin/run-singularity', 'bin/singularity', 'etc/singularity/singularity.conf'],
+    'dirs': ['etc', 'libexec/singularity']
+}
+
+# next steps after installation
+# INSTALLATION_PATH=your_installation_path
+# chown root:root $INSTALLATION_PATH/Singularity/*/etc/singularity/singularity.conf
+# chown root:root $INSTALLATION_PATH/Singularity/*/etc/singularity/capability.json
+# chown root:root $INSTALLATION_PATH/Singularity/*/etc/singularity/ecl.toml
+# chown root:root $INSTALLATION_PATH/Singularity/*/libexec/singularity/bin/*-suid
+# chmod 4755 $INSTALLATION_PATH/Singularity/*/libexec/singularity/bin/*-suid
+# chmod +s $INSTALLATION_PATH/Singularity/*/libexec/singularity/bin/*-suid
+
+parallel = 1
+
+moduleclass = 'tools'

@@ -1,0 +1,87 @@
+# -*- mode: python; -*-
+##
+# This file is an EasyBuild reciPY as per https://github.com/easybuilders/easybuild
+#
+# Copyright:: Copyright 2020-2021 University of Luxembourg
+# Authors::
+# * UL HPC Team <hpc-team@uni.lu>
+# License::   MIT/GPL
+
+easyblock = "Bundle"
+
+name = 'ULHPC-toolchains'
+version = '2020b'
+
+homepage = 'https://hpc.uni.lu/'
+description = """
+Generic Module bundle that contains all the dependencies required to enable
+toolchains and building tools/programming language in use on the UL HPC Facility
+"""
+
+toolchain = SYSTEM
+
+# See https://easybuild.readthedocs.io/en/latest/Common-toolchains.html#overview-of-common-toolchains
+local_gccver      = '10.2.0'
+# local_intelver    = '2020.1.217'
+local_binutilsver = '2.35'
+local_pyver       = '3.8.6'
+local_llvmver     = '11.0.0'
+
+dependencies = [
+    #-----------------------------------------------------------------------
+    # Main toolchains / Compilers
+    #-----------------------------------------------------------------------
+    ('GCCcore', local_gccver),
+    ('foss',    version),
+    ('intel',   version),
+    # Other useful compiling framworks
+    ('LLVM',   local_llvmver, '', ('GCCcore', local_gccver)),
+    #('Clang',  local_llvmver, '', ('GCCcore', local_gccver)),
+    ('Clang',  '11.0.1', '', ('GCCcore', local_gccver)),
+    ('NASM',   '2.15.05',     '', ('GCCcore', local_gccver)),  # General-purpose x86 Assembler
+    #-----------------------------------------------------------------------
+    # Buiding/testing/devel tools
+    #-----------------------------------------------------------------------
+    ('CMake',   '3.18.4', '', ('GCCcore', local_gccver)),
+    ('Doxygen', '1.8.20', '', ('GCCcore', local_gccver)),
+    ('ReFrame', '3.6.3'),
+    ('Spack',   '0.12.1'),
+    #------------------------------------------------------------------------
+    # MPI stacks
+    #------------------------------------------------------------------------
+    ('OpenMPI',  '4.0.5', '', ('GCC', local_gccver)),
+    #------------------------------------------------------------------------
+    # Main Programming Languages and programming aids
+    #------------------------------------------------------------------------
+    ('Go',       '1.16.6'),
+    ('Java',     '11'),
+    ('Java',     '13'),
+    ('Java',     '16'),
+    ('Julia',    '1.6.2',       '-linux-x86_64'),
+    ('Perl',     '5.32.0',      '', ('GCCcore',   local_gccver)),
+    ('Python',   local_pyver,   '', ('GCCcore',   local_gccver)),
+    ('Ruby',     '2.7.2',       '', ('GCCcore',   local_gccver)),
+    # ('Rust',     '1.52.1',      '', ('GCCcore',   local_gccver)), # Missing offical eb release for 2020b
+    ('R',        '4.0.5',       '', ('foss', version)),
+    #('R',        '4.0.0',       '', ('intel',version)), # Missing from offical eb releases
+    #--------------------------------------------------------------------------
+    # Development tools and libraries (incl. Comm. libraries, I/O Libraries...)
+    #--------------------------------------------------------------------------
+    ('Boost',        '1.74.0',  '', ('GCC',     local_gccver)),
+    ('Boost.Python', '1.74.0',  '', ('GCC',     local_gccver)),
+    ('SWIG',       '4.0.2',     '', ('GCCcore',   local_gccver)),  # SW devel. tool to interface C/C++ programs
+    ('ant',        '1.10.9',    '', ('Java', '11')),
+    ('tbb',        '2020.3',    '', ('GCCcore',   local_gccver)),
+    # ('sparsehash', '2.0.3',     '', ('GCCcore',   local_gccver)), # Missing from official eb release
+    # ('Spark',      '2.4.3',     '-Hadoop-2.7-Java-1.8-Python-%(pyver)s', ('intel', version)), # Missing from official eb release
+    ('Anaconda3',  '2020.11'),
+    #---------------------------------------------------------------------------
+    # Debuggers
+    #---------------------------------------------------------------------------
+    ('GDB',        '10.1',      '', ('GCCcore', local_gccver)),
+    ('Valgrind',   '3.16.1',    '',  ('gompi',   version)),
+    # ('Valgrind',   '3.16.1',    '',  ('iimpi',   version)), # Missing from official eb release
+
+]
+
+moduleclass = 'system'
