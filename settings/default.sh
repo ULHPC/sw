@@ -37,7 +37,7 @@ export EASYBUILD_MODULES_TOOL=${EASYBUILD_MODULES_TOOL:=Lmod}
 export EASYBUILD_MODULE_NAMING_SCHEME=CategorizedModuleNamingScheme
 # Set path to custom easyconfig files, order is important, and trailing ':' is key
 # See https://easybuild.readthedocs.io/en/latest/Using_the_EasyBuild_command_line.html#robot-search-path-prepend-append
-export EASYBUILD_ROBOT_PATHS=${TOP_DIR}/easyconfigs:${DEFAULT_ROBOT_PATHS}:${HOME}/git/github.com/ULHPC/easybuild-easyconfigs/easybuild/easyconfigs:
+export EASYBUILD_ROBOT_PATHS=${TOP_DIR}/easyconfigs:${DEFAULT_ROBOT_PATHS}:${HOME}/git/github.com/ULHPC/easybuild-easyconfigs/easybuild/easyconfigs
 unset  EASYBUILD_ROBOT
 _EB_SOURCEPATH="${LOCAL_RESIF_ROOT_DIR}/sources:${EASYBUILD_PREFIX}/sources:${TOP_DIR}/sources"
 if [ -d /opt/apps/sources ]; then

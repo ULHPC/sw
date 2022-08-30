@@ -22,7 +22,7 @@ toolchain = SYSTEM
 
 # See https://easybuild.readthedocs.io/en/latest/Common-toolchains.html#overview-of-common-toolchains
 local_gccver      = '10.2.0'
-# local_intelver    = '2020.1.217'
+local_intelver    = '2020.4.304'
 local_binutilsver = '2.35'
 local_pyver       = '3.8.6'
 local_llvmver     = '11.0.0'
@@ -68,9 +68,11 @@ dependencies = [
     # Development tools and libraries (incl. Comm. libraries, I/O Libraries...)
     #--------------------------------------------------------------------------
     ('Boost',        '1.74.0',  '', ('GCC',     local_gccver)),
+    ('Boost',        '1.74.0',  '', ('iccifort',local_intelver)),
     ('Boost.Python', '1.74.0',  '', ('GCC',     local_gccver)),
     ('SWIG',       '4.0.2',     '', ('GCCcore',   local_gccver)),  # SW devel. tool to interface C/C++ programs
     ('ant',        '1.10.9',    '', ('Java', '11')),
+    ('Maven',      '3.6.3'),
     ('tbb',        '2020.3',    '', ('GCCcore',   local_gccver)),
     # ('sparsehash', '2.0.3',     '', ('GCCcore',   local_gccver)), # Missing from official eb release
     # ('Spark',      '2.4.3',     '-Hadoop-2.7-Java-1.8-Python-%(pyver)s', ('intel', version)), # Missing from official eb release

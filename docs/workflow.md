@@ -1,4 +1,4 @@
-# Workflow: ULHPC Bundle developments
+# ULHPC Bundle developments
 
 ULHPC software sets was released using RESIF v2 up to Nov 2019, and were based at that time on the 2019a toolchain.
 The workflow proved to be quite complex and hard to maintain.
@@ -6,7 +6,7 @@ Furthermore, the broken compliance with streamline EasyBuild developments led to
 of custom configurations. With the advent of a new supercomputer (named Aion) featuring a different CPU architecture (AMD Epyc instead of Intel Broadwell/Skylake), and to mitigate the identified limitations, a complete code refactoring was initiated leading to the RESIF 3.0 framework
 
 The validation of the RESIF v3 workflow was proposed on **2019b** toolchain (since 2020a was not yet released at the time of these developments), with the objective to import the complete software set onto up-to-date versions matching 2019b requirements.
-RESIF 3 is further used to generate the 2020a and so forth releases
+RESIF 3 is further used to generate the 2020b and so forth releases
 
 The below guildelines illustrates the import of the software `<name>` into one of the ULHPC bundle. Remember that if possible, all software were proposed in the past for _both_ the `foss[cuda]` and the `intel[cuda]` toolchains. This should still guide the development process.
 
@@ -65,17 +65,147 @@ make fork-easyconfigs-update
 You should start with the **previous** stable bundle and adapt from it with the appropriate versions of the software listed.
 **ALWAYS start with the toolchains bundle**
 
+### Prepare the settings for the target version
+
+(To be done only once for a new software set `<version>`)
+
+**Copy and adapt the defaults settings `settings/<version>` directory**
+
+You'll typically have to update **3*** files with the appropriate version: `settings/<version>/{iris, iris-gpu, aion}.sh`
+Ex:
+
+```bash
+# Copy the most recent settings to the new target <version>,
+# Ex: <version>==2021b
+cd settings
+cp -r 2021a 2021b
+# update all occurences of 2021a - typically LOCAL_RESIF_ENVIRONMENT=<version> and other sources
+vim 2021b/{iris,aion}.sh # update LOCAL_RESIF_ENVIRONMENT
+vim 2021b.iris-gpu.sh    # update source
+```
+
+Ex from `diff -ru 2021a 2021b`:
+
+```diff
+diff -ru 2021a/aion.sh 2021b/aion.sh
+--- 2021a/aion.sh	2021-09-06 09:31:16.000000000 +0200
++++ 2021b/aion.sh	2022-07-21 17:43:43.000000000 +0200
+@@ -1,13 +1,13 @@
+ # Usage: source settings/<version>/aion.sh
+ #
+-# Example for interactive test
++# Example for interactive test
+ #   ./scripts/get-interactive-job
+ #    source settings/<version>/aion.sh
+ #    echo $EASYBUILD_PREFIX
+
+ TOP_DIR="$(cd "$( dirname "${BASH_SOURCE[0]}" )" && git rev-parse --show-toplevel)"
+
+-export LOCAL_RESIF_ENVIRONMENT=2021a
++export LOCAL_RESIF_ENVIRONMENT=2021b
+
+ if [ -f "${TOP_DIR}/settings/aion.sh" ]; then
+     . ${TOP_DIR}/settings/aion.sh
+diff -ru 2021a/iris-gpu.sh 2021b/iris-gpu.sh
+--- 2021a/iris-gpu.sh	2021-09-06 09:31:16.000000000 +0200
++++ 2021b/iris-gpu.sh	2022-07-21 17:43:29.000000000 +0200
+@@ -9,6 +9,6 @@
+
+ export LOCAL_RESIF_ARCH=gpu
+
+-if [ -f "${TOP_DIR}/settings/2021a/iris.sh" ]; then
+-    . ${TOP_DIR}/settings/2021a/iris.sh
++if [ -f "${TOP_DIR}/settings/2021b/iris.sh" ]; then
++    . ${TOP_DIR}/settings/2021b/iris.sh
+ fi
+diff -ru 2021a/iris.sh 2021b/iris.sh
+--- 2021a/iris.sh	2021-09-06 09:31:16.000000000 +0200
++++ 2021b/iris.sh	2022-07-21 17:45:10.000000000 +0200
+@@ -7,7 +7,7 @@
+
+ TOP_DIR="$(cd "$( dirname "${BASH_SOURCE[0]}" )" && git rev-parse --show-toplevel)"
+
+-export LOCAL_RESIF_ENVIRONMENT=2021a
++export LOCAL_RESIF_ENVIRONMENT=2021b
+
+ if [ -f "${TOP_DIR}/settings/iris.sh" ]; then
+     . ${TOP_DIR}/settings/iris.sh
+```
+
+**Repeat for `settings/prod/<version>/`**:
+
+```bash
+# Copy the most recent settings to the new target <version>,
+# Ex: <version>==2021b
+cd settings/prod
+cp -r 2021a 2021b
+# update all occurences of 2021a - typically LOCAL_RESIF_ENVIRONMENT=<version> and other sources
+vim 2021b/{iris,aion}.sh # update LOCAL_RESIF_ENVIRONMENT
+vim 2021b.iris-gpu.sh    # update source
+```
+
+Ex from `diff -ru 2021a 2021b`:
+
+```diff
+diff -ru 2021a/aion.sh 2021b/aion.sh
+--- 2021a/aion.sh	2021-09-06 09:31:16.000000000 +0200
++++ 2021b/aion.sh	2022-07-21 17:49:37.000000000 +0200
+@@ -1,13 +1,13 @@
+ # Usage: source settings/prod/<version>/aion.sh
+ #
+-# Example for interactive test
++# Example for interactive test
+ #   ./scripts/get-interactive-job
+ #    source settings/prod/<version>/aion.sh
+ #    echo $EASYBUILD_PREFIX
+
+ TOP_DIR="$(cd "$( dirname "${BASH_SOURCE[0]}" )" && git rev-parse --show-toplevel)"
+
+-export LOCAL_RESIF_ENVIRONMENT=2021a
++export LOCAL_RESIF_ENVIRONMENT=2021b
+
+ if [ -f "${TOP_DIR}/settings/prod/aion.sh" ]; then
+     . ${TOP_DIR}/settings/prod/aion.sh
+diff -ru 2021a/iris-gpu.sh 2021b/iris-gpu.sh
+--- 2021a/iris-gpu.sh	2021-09-06 09:31:16.000000000 +0200
++++ 2021b/iris-gpu.sh	2022-07-21 17:50:02.000000000 +0200
+@@ -9,6 +9,6 @@
+
+ export LOCAL_RESIF_ARCH=gpu
+
+-if [ -f "${TOP_DIR}/settings/prod/2021a/iris.sh" ]; then
+-    . ${TOP_DIR}/settings/prod/2021a/iris.sh
++if [ -f "${TOP_DIR}/settings/prod/2021b/iris.sh" ]; then
++    . ${TOP_DIR}/settings/prod/2021b/iris.sh
+ fi
+diff -ru 2021a/iris.sh 2021b/iris.sh
+--- 2021a/iris.sh	2021-09-06 09:31:16.000000000 +0200
++++ 2021b/iris.sh	2022-07-21 17:49:46.000000000 +0200
+@@ -7,7 +7,7 @@
+
+ TOP_DIR="$(cd "$( dirname "${BASH_SOURCE[0]}" )" && git rev-parse --show-toplevel)"
+
+-export LOCAL_RESIF_ENVIRONMENT=2021a
++export LOCAL_RESIF_ENVIRONMENT=2021b
+
+ if [ -f "${TOP_DIR}/settings/prod/iris.sh" ]; then
+     . ${TOP_DIR}/settings/prod/iris.sh
+```
+
+
+
+
 ### Copy and adapt from the last stable bundle
 
-Ex: to prepare the 2020b version from 2020a:
+Ex: to prepare the 2021b version from 2020b:
 
 ```bash
 cd path/to/sw
 make up
 make fork-easyconfigs-update     # Always keep up to date the latests configs
-git-flow feature start <version> # In this case: <version>=2020b
+git-flow feature start <version> # In this case: <version>=2021b
 cd easyconfigs/u/ULHPC-toolchains
-cp ULHPC-toolchains-2020a.eb ULHPC-toolchains-2020b.eb # ADAPT accordingly
+cp ULHPC-toolchains-2020b.eb ULHPC-toolchains-2021b.eb # ADAPT accordingly
 ```
 
 Then you should adapt all the `local_` variables with the appropriate versions:
@@ -83,12 +213,15 @@ Then you should adapt all the `local_` variables with the appropriate versions:
 ```bash
 # /!\ ADAPT <version> accordingly
 $ ./scripts/suggest-easyconfigs -v <version> -s GCC binutils Python LLVM
-# In this case:
+# Note that you may need to update the script 'suggest-easyconfigs' to suport that version ;)
+# Ex:
 $ ./scripts/suggest-easyconfigs -v 2020b -s GCC binutils Python LLVM
                GCC: GCC-10.2.0.eb
           binutils: binutils-2.35-GCCcore-10.2.0.eb
             Python: Python-3.8.6-GCCcore-10.2.0.eb
               LLVM: LLVM-11.0.0-GCCcore-10.2.0.eb
+$ ./scripts/suggest-easyconfigs -v 2021b -s GCC binutils Python LLVM
+# [...]
 ```
 
 Then make a quick and dirty check of the _probable_ good versions of each software listed in the bundle as follows:
@@ -130,6 +263,7 @@ bundle=toolchains; version=2020b; ./scripts/suggest-easyconfigs -v $version -s $
                GDB: GDB-10.1-GCCcore-10.2.0.eb
           Valgrind: Valgrind-3.16.1-gompi-2020b.eb
 ```
+
 It's far from being perfect but it can help to provide a good **draft** version of the bundle you can work on. When in doubt, check the list of easyconfigs with `./scripts/suggest-easyconfigs -v <version> <pattern>`. Example:
 
 ```bash
@@ -149,32 +283,13 @@ bundle=toolchains; version=2020b; eb --check-contrib ./easyconfigs/u/ULHPC-${bun
 ### Comment out potential problematic and test builds
 
 Some software (and their dependencies) like OpenMPI will deserve a special attention so it's better at this stage to comment out them.
-Then
-
-1. Make a testing Builds (project `sw`), probably against the 2020b environment:
-
-```bash
-# Interactive tests
-./scripts/get-interactive-job
-source settings/2020b/aion.sh
-echo $EASYBUILD_PREFIX
-# OR... with passive jobs
-sbatch ./scripts/2020b/launcher-test-build-amd.sh -D toolchains
-sbatch ./scripts/2020b/launcher-test-build-amd.sh toolchains
-```
-
-   Repeat until the bundle is complete
-2. Once completed, make a production build
-
-See [`build.md`](build.md) for more details.
-
 
 ## Finding existing easyconfigs
 
 ```bash
 make up
 make fork-easyconfigs-update  # ensure you get latest easyconfigs
-source setting/<cluster>[-gpu].sh    # Adapt accordingly
+source setting/<version>/<cluster>[-gpu].sh    # Adapt accordingly
 eb -S <pattern>
 ./scripts/suggest-easyconfigs [-v <version>] <pattern>
 ```
@@ -218,7 +333,7 @@ CFGS1=[...]   # Define suggested variable
 cp $CFGS1/<name>-<version>[...].eb easyconfigs/<letter>/<name>
 cd easyconfigs/<letter>/<name>
 # Eventually -- diff with past custom EB present in ULHPC/easyconfigs private repo on Gitlab
-colordiff <name>-<version>[...].eb ~/git/gitlab.uni.lu/ULHPC/easyconfigs/[...].eb
+colordiff <name>-<version>[...].eb ~/git/github.com/ULHPC/easyconfigs/[...].eb
 # Now prepare for adapting filename and content of easyconfig to match target toolchain
 mv <name>-<version>[...].eb <name>-[...].eb
 ```
@@ -295,20 +410,30 @@ $ ./scripts/suggest-easyconfigs -s expat texinfo zlib libreadline ncurses Python
             Python: Python-3.7.4-GCCcore-8.3.0.eb
 ```
 
-## Test the build
+## Testing individual software easyconfigs builds
+
+See also [extending instructions](extend.md) when promoting a software: [testing the build](build.md#testing-builds-project-sw) (project `sw`) as `$(whoami)` against the target swset version `<version>`
 
 ```bash
 # Eventually on your laptop:
 $ make sync
 # on iris
-# Ex: broadwell interactive build
-$ ./scripts/get-interactive-job
-$ source settings/iris.sh
-$ ./scripts/launcher-test-build-cpu.sh -n [easyconfigs/<letter>/<name>/]<name>[...].eb # Dry-run
-$ ./scripts/launcher-test-build-cpu.sh [easyconfigs/<letter>/<name>/]<name>[...].eb
+$ ./scripts/get-interactive-job[-gpu].sh
+$ source settings/<version>/<cluster>[-gpu].sh
+$ ./scripts/<version>/launcher-test-build-<cluster>[-gpu].sh -D -n <filename>.eb # Dry-run
+$ ./scripts/<version>/launcher-test-build-<cluster>[-gpu].sh -D    <filename>.eb
 ```
 
-If the build succeed, you can commit your new easyconfig (if you had to develop one) and add it to the appropriate ULHPC bundle
+Or in passive mode:
+
+```
+sbatch [...] ./scripts/<version>/launcher-test-build-<cluster>[-gpu].sh -D [-n] <filename>.eb
+```
+
+If the build succeed, you can commit your new easyconfig (if you had to develop one) and add it to the appropriate ULHPC bundle (see below).
+You are expected to contribute it back to the Easybuilders community -- see [`contributing/`](contributing/) for more details.
+
+
 
 ## Update the appropriate ULHPC bundle accordingly
 
@@ -333,6 +458,61 @@ Example:
     ('Boost',  '1.71.0',  '', ('iimpi',    version)),
     ('GDB',    '9.1',   '-Python-%(pyver)s', ('GCCcore', local_gccver)),
 ```
+
+### Build the Bundle
+
+Simply follow the [RESIF Software Build instructions](build.md):
+
+*  [Test the build](build.md#testing-build-against-production-release) (project `sw`) as `$(whoami)` **against the target software set release `<version>`**
+
+```bash
+# Interactive tests
+$ ./scripts/get-interactive-job[...]
+$ source settings/<version>/<cluster>[-gpu].sh
+$ echo $EASYBUILD_PREFIX
+$ ./scripts/<versThen, follow the [RESIF Software Build instructions](build.md):
+
+*  [Test the build](build.md#testing-build-against-production-release) (project `sw`) as `$(whoami)` **against the target software set release `<version>`**
+
+```bash
+# Interactive tests
+$ ./scripts/get-interactive-job[...]
+$ source settings/<version>/<cluster>[-gpu].sh
+$ echo $EASYBUILD_PREFIX
+$ ./scripts/<version>/launcher-test-build-<cluster>[-gpu].sh -D -n <bundle> # Dry-run
+$ ./scripts/<version>/launcher-test-build-<cluster>[-gpu].sh -D <bundle>
+
+# OR... with passive jobs
+$ sbatch [...] ./scripts/<version>/launcher-test-build-<cluster>[-gpu].sh -D -n <bundle> # Dry-run
+$ sbatch [...] ./scripts/<version>/launcher-test-build-<cluster>[-gpu].sh -D <bundle>
+```
+
+* Repeat the above until the bundle `<bundle>` is complete
+
+* **Once completed, repeat the [full build procedure within _production_ build](build.md#production-builds-resif-user)** (as `resif` user)  against the target software set version `<version>`
+
+```bash
+# Preliminaries, always important
+$ ssh resif@<cluster>-cluster
+$ cd git/github.com/ULHPC/sw
+$ screen -S <version> # OR tmux new-session -t <version>
+# DO NOT RUN BULDS OUTSIDE A SCREEN OR TMUX SESSION
+
+### Interactive tests - TO AVOID
+./scripts/get-interactive-job[...]
+source settings/prod/<version>/<cluster>[-gpu].sh
+echo $EASYBUILD_PREFIX
+./scripts/prod/launcher-prod-build-<cluster>[-gpu].sh -v <version> -D -n <bundle> # Dry-run
+./scripts/prod/launcher-prod-build-<cluster>[-gpu].sh -v <version> -D <bundle>
+
+# OR... with passive jobs
+sbatch [...] ./scripts/prod/launcher-prod-build-<cluster>[-gpu].sh -v <version> -D -n <bundle> # Dry-run
+sbatch [...] ./scripts/prod/launcher-prod-build-<cluster>[-gpu].sh -v <version> -D <bundle>
+```
+
+
+See [`build.md`](build.md) for more details.
+
 
 ## Commit and merge your changes
 
@@ -414,7 +594,7 @@ It's thus up to you to set appropriately the `LICENSES_YAML_FILE` variable to po
 
 ## Contribute to Easybuild
 
-If you developped a new easyconfig, you are expected to contribute it back to the Easybuilders community.
+If you developped new easyconfig(s), you are expected to contribute them back to the Easybuilders community.
 This is required to restrict at maximum the number of _internal_ custom Easyconfigs and one of the difference with the previous workflow.
 
 See [`contributing/`](contributing/) for more details.

@@ -1,5 +1,5 @@
 #! /bin/bash
-# Time-stamp: <Thu 2021-07-22 10:24 svarrette>
+# Time-stamp: <Tue 2022-04-05 09:26 svarrette>
 ################################################################################
 # suggest-easyconfigs - Suggest an easyconfig for [past] software or pattern
 ################################################################################
@@ -11,8 +11,8 @@ TOP_DIR="$(cd "$( dirname "${BASH_SOURCE[0]}" )" && git rev-parse --show-topleve
 CMD_PREFIX=
 MODE=
 SUMMARY_MODE=
-TOOLCHAIN_VERSION=${RESIF_VERSION_DEVEL:2020a}
-GCC_VERSION=9.3.0
+TOOLCHAIN_VERSION=${RESIF_VERSION_DEVEL:=2020b}
+GCC_VERSION=10.2.0
 
 # Software lists
 MODULES_AVAILABLE=
@@ -26,8 +26,9 @@ print_error_and_exit() { error $*; exit 1; }
 usage() {
     cat <<EOF
 NAME
-  $(basename $0): Suggest a easyconfig(s) for past software sets or pattern
+  $(basename $0): Suggest a easyconfig(s) for a given software sets or pattern
   passed as argument
+  Default toolchain/software set version: ${TOOLCHAIN_VERSION}
 
 USAGE
   $0 [-v <version] <pattern> # search for <pattern>
@@ -99,6 +100,7 @@ search_easyconfigs_for_toolchain() {
     [ -z "$1" ] && print_error_and_exit "[$FUNCNAME] missing pattern argument"
     local pattern=$1
     found=$(search_easyconfigs ${pattern} | egrep "${TOOLCHAIN_VERSION}|${GCC_VERSION}")
+    # TODO: filter also on cuda pattern for GPU search
     [ -z "${found}" ] && echo "None found" || echo $found | tr ' ' '\n'
 }
 
@@ -135,6 +137,7 @@ case $TOOLCHAIN_VERSION in
     2020a) GCC_VERSION=9.3.0;;
     2020b) GCC_VERSION=10.2.0;;
     2021a) GCC_VERSION=10.3.0;;
+    2021b) GCC_VERSION=11.2.0;;
     *) print_error_and_exit "Not supported toolchain version '${TOOLCHAIN_VERSION}'"
 esac
 # echo "PATTERN_LIST=${PATTERN_LIST}"

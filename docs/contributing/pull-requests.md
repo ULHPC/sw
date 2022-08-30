@@ -33,7 +33,7 @@ eb --update-pr <ID> <file>.eb --pr-commit-msg "<message>"
 
 ## Creating a new pull-request
 
-Once you have a new (tested) and working EB file eligible for a pull request, use the script [`scripts/PR-create`](https://gitlab.uni.lu/svarrette/sw/-/blob/devel/scripts/PR-create) to create a new pull-request  __from your laptop__
+Once you have a new (tested) and working EB file eligible for a pull request, use the script `scripts/PR-create` to create a new pull-request  __from your laptop__
 
 ```
 $> ./scripts/PR-create -h
@@ -63,11 +63,11 @@ $ ./scripts/PR-create -n easyconfigs/p/PGI/PGI-19.10-GCC-8.3.0-2.32.eb   # Dry-r
 # echo eb --new-pr easyconfigs/p/PGI/PGI-19.10-GCC-8.3.0-2.32.eb
 # Enter created pull-request ID: (using fake PR: )
 # => storing info on pending Pull-Request #1234
-# mkdir -p /Users/svarrette/git/gitlab.uni.lu/svarrette/sw/easyconfigs/pull-requests/1234
-# ln -s ../../easyconfigs/p/PGI/PGI-19.10-GCC-8.3.0-2.32.eb /Users/svarrette/git/gitlab.uni.lu/svarrette/sw/easyconfigs/pull-requests/1234/PGI-19.10-GCC-8.3.0-2.32.eb
+# mkdir -p /Users/svarrette/git/github.com/ULHPC/sw/easyconfigs/pull-requests/1234
+# ln -s ../../easyconfigs/p/PGI/PGI-19.10-GCC-8.3.0-2.32.eb /Users/svarrette/git/github.com/ULHPC/sw/easyconfigs/pull-requests/1234/PGI-19.10-GCC-8.3.0-2.32.eb
 # => committing changes
 # git add easyconfigs/p/PGI/PGI-19.10-GCC-8.3.0-2.32.eb
-# git add /Users/svarrette/git/gitlab.uni.lu/svarrette/sw/easyconfigs/pull-requests/1234
+# git add /Users/svarrette/git/github.com/ULHPC/sw/easyconfigs/pull-requests/1234
 # git commit -s -m [PR #1234] easyconfigs/p/PGI/PGI 19.10
 
 $ ./scripts/PR-create easyconfigs/p/PGI/PGI-19.10-GCC-8.3.0-2.32.eb
@@ -216,7 +216,7 @@ git commit -s -m "[PR #10306] Complete with Java 13 wrapper accordingdly"
 ## Update your local easyconfigs from Pull Request comments
 
 It might happen that further commits are proposed by easybuilders to correct your initial easyconfig.
-In that case you should collect the latest version from the pull request branch using the [`scripts/PR-collect-remote-updates`](https://gitlab.uni.lu/svarrette/sw/-/blob/devel/scripts/PR-collect-remote-updates)
+In that case you should collect the latest version from the pull request branch using the [`scripts/PR-collect-remote-updates`](https://github.com/ULHPC/sw/-/blob/devel/scripts/PR-collect-remote-updates)
 
 ```bash
 $> ./scripts/PR-collect-remote-updates -h
@@ -244,7 +244,7 @@ Example:
 $> ./scripts/PR-collect-remote-updates -n 10294
 # /!\ WARNING: update your local easyconfigs from pull-request '10294'.
 # Are you sure you want to continue? [Y|n]
-# ... using existing json '/Users/svarrette/git/gitlab.uni.lu/svarrette/sw/logs/2020-04-07-pull-request-10294.json'
+# ... using existing json '/Users/svarrette/git/github.com/ULHPC/sw/logs/2020-04-07-pull-request-10294.json'
 # Updating (Fork) repository '/Users/svarrette/git/github.com/ULHPC/easybuild-easyconfigs'
 # make fork-easyconfigs-update
 # collecting last commits from [remote] branch '20200331180505_new_pr_PGI1910' from (Fork) repository '/Users/svarrette/git/github.com/ULHPC/easybuild-easyconfigs'
@@ -255,8 +255,8 @@ $> ./scripts/PR-collect-remote-updates -n 10294
 # git -C /Users/svarrette/git/github.com/ULHPC/easybuild-easyconfigs checkout develop
 #    delete local branch '20200331180505_new_pr_PGI1910'
 # git -C /Users/svarrette/git/github.com/ULHPC/easybuild-easyconfigs branch -d 20200331180505_new_pr_PGI1910
-# removing /Users/svarrette/git/gitlab.uni.lu/svarrette/sw/logs/2020-04-07-pull-request-10294.json
-# rm -f /Users/svarrette/git/gitlab.uni.lu/svarrette/sw/logs/2020-04-07-pull-request-10294.json
+# removing /Users/svarrette/git/github.com/ULHPC/sw/logs/2020-04-07-pull-request-10294.json
+# rm -f /Users/svarrette/git/github.com/ULHPC/sw/logs/2020-04-07-pull-request-10294.json
 
 $> ./scripts/PR-collect-remote-updates 10294
 ```

@@ -1,5 +1,5 @@
 #!/bin/bash -l
-# Time-stamp: <Wed 2021-04-14 17:51 svarrette>
+# Time-stamp: <Tue 2022-04-05 09:16 svarrette>
 ############################################################################
 # RESIF 3.0 Building Apps Slurm launcher - CPU Skylake Builds
 ############################################################################
@@ -15,8 +15,8 @@
 #SBATCH -C skylake
 #__________________________
 #SBATCH -N 1
-#SBATCH --ntasks-per-node 2
-#SBATCH -c 14
+#SBATCH --ntasks-per-node 4
+#SBATCH -c 7
 #__________________________
 #SBATCH -o logs/%x-%j.out
 mkdir -p logs
