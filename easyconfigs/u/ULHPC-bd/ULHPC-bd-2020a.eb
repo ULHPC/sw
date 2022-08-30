@@ -1,0 +1,33 @@
+# -*- mode: python; -*-
+##
+# This file is an EasyBuild reciPY as per https://github.com/easybuilders/easybuild
+#
+# Copyright:: Copyright 2020-2021 University of Luxembourg
+# Authors::
+# * UL HPC Team <hpc-team@uni.lu>
+# License::   MIT/GPL
+
+easyblock = "Bundle"
+
+name = 'ULHPC-bd'
+version = '2020a'
+
+homepage = 'https://hpc.uni.lu/'
+description = """
+Generic Module bundle for BigData software in use on the UL HPC Facility
+"""
+
+toolchain = SYSTEM
+
+# See https://easybuild.readthedocs.io/en/latest/Common-toolchains.html#overview-of-common-toolchains
+local_gccver      = '9.3.0'
+local_intelver    = '2020.1.217'
+local_binutilsver = '2.34'
+local_pyver       = '3.8.2'
+local_llvmver     = '9.0.1'
+
+dependencies = [
+    ('Spark',          '3.1.2',  '-Python-%s'%(local_pyver),     ('foss',    version)),
+]
+
+moduleclass = 'system'

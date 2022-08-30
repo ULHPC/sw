@@ -1,4 +1,4 @@
-# Time-stamp: <Mon 2021-09-06 08:03 svarrette>
+# Time-stamp: <Mon 2021-09-06 19:11 svarrette>
 ################################################################################
 # Common RESIF 3.0 functions
 #
@@ -12,8 +12,13 @@ case ${LOCAL_RESIF_ENVIRONMENT} in
     20*) VERSION=${LOCAL_RESIF_ENVIRONMENT};;
     *)   VERSION=;;
 esac
-case "$(basename $0)$LOCAL_RESIF_ARCH" in
-    *gpu*) ULHPC_MODULE_BUNDLES="$(ls -d ${ULHPC_EASYCONFIGS_DIR}/ULHPC-gpu* | sed 's/.*ULHPC-//' | xargs echo)";;
+case "$(basename $0)${LOCAL_RESIF_ARCH}${RESIF_ARCH}" in
+    *gpu*)
+        ULHPC_MODULE_BUNDLES="$(ls -d ${ULHPC_EASYCONFIGS_DIR}/ULHPC-gpu* | sed 's/.*ULHPC-//' | xargs echo)";
+        # Find appropriate cuda-compute-capabilities values from https://developer.nvidia.com/cuda-gpus
+        # Select CUDA-Enabled Datacenter Products / NVIDIA V100	7.0
+        OPTS="${OPTS} --cuda-compute-capabilities=7.0"
+        ;;
     *)     ULHPC_MODULE_BUNDLES="toolchains $(ls -d ${ULHPC_EASYCONFIGS_DIR}/ULHPC-* | grep -v -E 'toolchains|gpu' | cut -d '-' -f 2 | xargs echo)";;
 esac
 CMD_PREFIX=
@@ -95,6 +100,7 @@ EOF
 
 parse_command_line()
 {
+
     while [ "$1" != "" ]; do
         case $1 in
             -h | --help)  usage; exit 0;;
@@ -205,24 +211,25 @@ EOF
             f="ULHPC-${t}-${VERSION}.eb"
             cat <<EOF
 ======== Building ULHPC ${t} Module Bundle '${f}' =======
-=> checking dependencies
+=> eb ${OPTS} ${f} -r --rebuild [-D]
 EOF
-            ${CMD_PREFIX} eb ${f} ${OPTS} -r --rebuild -D || print_error_and_exit "Command 'eb ${EBFILE} -Dr' failed"
+            ${CMD_PREFIX} eb ${OPTS} ${f} -r --rebuild -D || print_error_and_exit "Command 'eb ${EBFILE} -Dr' failed"
             if [ -z "${DRY_RUN_SHORT}" ]; then
                 echo "=> [Re]building $(basename $f)"
                 case $LOCAL_RESIF_ROOT_DIR in
-                    *projects/sw/*) ${CMD_PREFIX} sg sw -c "eb ${f} ${OPTS} -r --rebuild";;   # Enforce using the 'sw' group
-                    *)              ${CMD_PREFIX} eb ${f} ${OPTS} -r --rebuild;;
+                    *projects/sw/*) ${CMD_PREFIX} sg sw -c "eb ${OPTS} ${f} -r --rebuild";;   # Enforce using the 'sw' group
+                    *)              ${CMD_PREFIX} eb ${OPTS} ${f} -r --rebuild;;
                 esac
             fi
         done
     fi
-    if [ -n "${EBFILE}" ]; then
-        ${CMD_PREFIX} eb ${EBFILE} ${OPTS} -r --rebuild -D || print_error_and_exit "Command 'eb ${EBFILE} -Dr' failed"
+    if [ -n "${EBFILE}" ]; then   # FIXME: factorize
+	echo "=> eb ${EBFILE} ${OPTS} -r --rebuild [-D]"
+        ${CMD_PREFIX} eb ${OPTS} ${EBFILE} -r --rebuild -D || print_error_and_exit "Command 'eb ${EBFILE} -Dr' failed"
         if [ -z "${DRY_RUN_SHORT}" ]; then
             case $LOCAL_RESIF_ROOT_DIR in
-                *projects/sw/*) ${CMD_PREFIX} sg sw -c "eb ${EBFILE} ${OPTS} -r --rebuild";;   # Enforce using the 'sw' group
-                *)              ${CMD_PREFIX} eb ${EBFILE} ${OPTS} -r --rebuild;;
+                *projects/sw/*) ${CMD_PREFIX} sg sw -c "eb ${OPTS} ${EBFILE} -r --rebuild";;   # Enforce using the 'sw' group
+                *)              ${CMD_PREFIX} eb ${OPTS} ${EBFILE} -r --rebuild;;
             esac
         fi
     fi

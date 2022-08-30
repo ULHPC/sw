@@ -54,11 +54,12 @@ dependencies = [
     # #------------------------------------------------------------------------
     ('Go',       '1.14.1'),
     ('Java',     '11'),
-    ('Java',     '13.0.2'),
+    ('Java',     '13'),
+    ('Java',     '16'),
     ('Julia',    '1.4.2',       '-linux-x86_64'),
     ('Perl',     '5.30.2',      '', ('GCCcore',   local_gccver)),
     ('Python',   local_pyver,   '', ('GCCcore',   local_gccver)),
-    ('Ruby',     '2.7.1',       '', ('GCCcore',   local_gccver)),
+    ('Ruby',     '2.7.2',       '', ('GCCcore',   local_gccver)),
     ('Rust',     '1.42.0',      '', ('GCCcore',   local_gccver)),
     ('R',        '4.0.0',       '', ('foss', version)),
     #('R',        '4.0.0',       '', ('intel',version)), # Missing from offical eb releases

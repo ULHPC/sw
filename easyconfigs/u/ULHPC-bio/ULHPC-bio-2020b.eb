@@ -42,7 +42,7 @@ dependencies = [
     # The following things should be checked with latest dependenies
     # ('QuantumESPRESSO', '6.7',     '',                   ('intel',    version)),
     ('QuantumESPRESSO', '6.7',     '',                   ('foss',     version)),
-    # ('ABINIT',          '9.4.1'    '',                   ('intel',    version)),
+    # ('ABINIT',          '9.4.1'    '',                   ('intel',    version)),  # foss failed to build
     #-----------------------------------------------------------------------------------------------------------------
     # Bioinformatics tools for next-gen sequencing analysis
     #-----------------------------------------------------------------------------------------------------------------

@@ -1,5 +1,5 @@
 #! /bin/bash
-# Time-stamp: <Wed 2021-04-14 17:23 svarrette>
+# Time-stamp: <Tue 2022-04-12 10:34 svarrette>
 ################################################################################
 # PR-create - Open a new pull-request via 'eb --new-pr'
 ################################################################################
@@ -34,6 +34,7 @@ USAGE
   Use: $(basename $0) --pr <ID> easyconfigs/<path/to/file>.eb
   if you want to perform **ONLY** step 3 above
 
+
 EXAMPLE:
   $0 easyconfigs/p/PGI/PGI-19.10-GCC-8.3.0-2.32.eb
 EOF
@@ -50,9 +51,10 @@ really_continue() {
 while [ $# -ge 1 ]; do
     case $1 in
         -h | --help) usage; exit 0;;
-        -n | --noop | --dry-run)       CMD_PREFIX=echo;;
-        -m | --msg  | --pr-commit-msg) shift; OPTS="--pr-commit-msg '$1'";;
-        -i | --id   | --pr)            shift; PR=$1;;
+        -n | --noop | --dry-run)        CMD_PREFIX=echo;;
+        --no-lint | --no-check-contrib) NO_CHECK_CONTRIB=$1;;
+        -m | --msg  | --pr-commit-msg)  shift; OPTS="--pr-commit-msg '$1'";;
+        -i | --id   | --pr)             shift; PR=$1;;
         *.eb) EBFILE=$1;;
         *) OPTS="${OPTS} $*"; break;;
     esac
@@ -64,8 +66,10 @@ done
 really_continue "About to open a pull-request for '${EBFILE}'"
 
 if [ -z "${PR}" ]; then
-    info "=> checking code style for '${EBFILE}'"
-    ${CMD_PREFIX} eb --check-contrib ${EBFILE} || print_error_and_exit "Style to review or eb command not found (source settings/default.sh ?)"
+    if [ -z "${NO_CHECK_CONTRIB}" ]; then
+        info "=> checking code style for '${EBFILE}'"
+        ${CMD_PREFIX} eb --check-contrib ${EBFILE} || print_error_and_exit "Style to review or eb command not found (source settings/default.sh ?)"
+    fi
 
     info "=> submitting a new pull requests for '${EBFILE}'"
     ${CMD_PREFIX} eb --new-pr ${EBFILE} ${OPTS}

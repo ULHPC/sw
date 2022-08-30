@@ -1,5 +1,5 @@
 #!/bin/bash -l
-# Time-stamp: <Thu 2021-07-29 23:17 svarrette>
+# Time-stamp: <Tue 2022-02-01 22:09 svarrette>
 ###############################################################################
 # Helper script to centralize management of interactive jobs for RESIF builds
 
@@ -42,7 +42,7 @@ while [ $# -ge 1 ]; do
         e*) NODE_TYPE=epyc;;
         s*) NODE_TYPE=skylake;;
         g*) NODE_TYPE=gpu;;
-        *) OPTS=$*; break;;
+        *) SI_OPTS=$*; break;;
     esac
     shift
 done
@@ -68,6 +68,6 @@ fi
 
 echo "=> get interactive job for a ${NODE_TYPE} node"
 case $NODE_TYPE in
-    gpu) ${CMD_PREFIX} si-gpu             -N1 --ntasks-per-node ${T} -c ${C} -G1 ${OPTS} -t 2:00:00;;
-    *)   ${CMD_PREFIX} si -C ${NODE_TYPE} -N1 --ntasks-per-node ${T} -c ${C}     ${OPTS} -t 2:00:00;;
+    gpu) ${CMD_PREFIX} si-gpu             -N1 --ntasks-per-node ${T} -c ${C} -G1 ${SI_OPTS} -t 2:00:00;;
+    *)   ${CMD_PREFIX} si -C ${NODE_TYPE} -N1 --ntasks-per-node ${T} -c ${C}     ${SI_OPTS} -t 2:00:00;;
 esac

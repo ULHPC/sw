@@ -27,8 +27,11 @@ local_pyver       = '3.8.6'
 local_pyver2      = '2.7.18'
 
 dependencies = [
+    # ('Arrow',     '0.17.1',      '', ('foss', version)),
     ('dask',      '2021.2.0',    '', ('foss', version)),
     ('dask',      '2021.2.0',    '', ('intel', version)),
+    ('Flink',     '1.11.2',      '-bin-scala_2.11'),
+    ('Hadoop', '2.10.0', '-native-Java-1.8', ('GCCcore', local_gccver)), 
     # ('Spark',          '3.1.2',  '-Python-%s'%(local_pyver),     ('foss',    version)),
 ]
 

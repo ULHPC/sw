@@ -42,9 +42,10 @@ dependencies = [
     # ('arpack-ng', '3.8.0',   '', ('intel', version)), # Missing from official eb release
     ('Armadillo', '10.5.3', '',  ('foss',  version)), # C++ library for linear algebra & scientific computing
     ('Eigen',  '3.3.8',      '', ('GCCcore', local_gccver)),     # C++ template library for linear algebra
-    ('GMP',    '6.2.0',      '', ('GCCcore', local_gccver)),      # GNU Multiple Precision Arithmetic Library
-    ('GSL',    '2.6',        '', ('GCC',      local_gccver)),     # GNU Scientific Library (GSL)
-    #-----------------------------------------------------------------------
+    ('GMP',    '6.2.0',      '', ('GCCcore', local_gccver)),     # GNU Multiple Precision Arithmetic Library
+    ('GSL',    '2.6',        '', ('GCC',     local_gccver)),     # GNU Scientific Library (GSL)
+    ('GSL',    '2.6',        '', ('iccifort',local_intelver)),
+     #-----------------------------------------------------------------------
     # Graph lib
     #-----------------------------------------------------------------------
     ('gnuplot','5.4.1',      '',('GCCcore',local_gccver)), # gnuplot-5.2.8-GCCcore-8.3.0.eb -- Library to plot
@@ -52,15 +53,15 @@ dependencies = [
     # Symbolic computation
     #-----------------------------------------------------------------------
     ('Mathematica','12.1.0'),
-    # ('MATLAB', version),  # ISO copied; pending correct key 
-    # ('MATLAB', '2021a'),  # ISO copied, pending correct key 
+    ('MATLAB', '2021a'),
+    ('Stata', '17', '', ('GCCcore', local_gccver)),
     #-----------------------------------------------------------------------
     # Optimizers
     # ----------------------------------------------------------------------
     # ('CPLEX', '12.10', '-Python-%s'%(local_pyver), ('GCCcore', local_gccver)), # Missing from official eb release
-    ('Gurobi', '9.1.2', '',         ('GCCcore', local_gccver)),
-    ('GLPK',   '4.65',  '',         ('GCCcore', local_gccver)),
-    # ('Dakota', '6.11.0', '-Python-%s'%(local_pyver), ('foss', version)), # Missing from official eb release
+    ('Gurobi', '9.1.2',  '',                         ('GCCcore', local_gccver)),
+    ('GLPK',   '4.65',   '',                         ('GCCcore', local_gccver)),
+    ('Dakota', '6.15.0', '', ('foss', version)),
 ]
 
 moduleclass = 'system'

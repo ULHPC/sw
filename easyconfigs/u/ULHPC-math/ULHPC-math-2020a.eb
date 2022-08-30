@@ -56,15 +56,15 @@ dependencies = [
     # Optimizers
     # ----------------------------------------------------------------------
     ('CPLEX', '12.10', '-Python-%s'%(local_pyver), ('GCCcore', local_gccver)),
-    ('Gurobi', '9.0.1', '-Python-%s'%(local_pyver), ('GCCcore', local_gccver)),
+    ('Gurobi', '9.0.1'), #, '-Python-%s'%(local_pyver), ('GCCcore', local_gccver)),
     ('GLPK',   '4.65',  '',                         ('GCCcore', local_gccver)),
-    ('Dakota', '6.11.0', '-Python-%s'%(local_pyver),('foss', version)),
+    ('Dakota', '6.14.0', '-Python-%s'%(local_pyver),('foss', version)),
     #-----------------------------------------------------------------------
     # Machine Learning / Deep Learning
     #-----------------------------------------------------------------------
     ('Keras', '2.3.1', '-Python-%s'%(local_pyver), ('foss', version)),
     #('Horovod', '0.19.1', '-TensorFlow-%s-Python-%s'%(local_tfversion,local_pyver), ('foss', version)),
-    ('PyTorch', '1.4.0', '-Python-%s'%(local_pyver), ('foss', version)),
+    #('PyTorch', '1.7.1', '-Python-%s'%(local_pyver), ('foss', version)), #unable to build
 ]
 
 moduleclass = 'system'
