@@ -6,9 +6,11 @@ nav:
 - Easybuild Framework Environment @ULHPC: 'environment.md'
 - UL HPC Software Set Bundles: 'swsets.md'
 - User Software builds: 'build.md'
-- Workflow and Development guidelines: 'workflow.md'
+- Bundle Development workflow: 'workflow.md'
+- Extending an Existing Software Set: 'extend.md'
 - Production releases notes:
   - 2019b: 'releases/2019b.md'
+  - 2020b: 'releases/2020b.md'
 - Contributing:
   - Overview: 'contributing/index.md'
   - Directory Layout: 'layout.md'

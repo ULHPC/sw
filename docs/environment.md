@@ -116,7 +116,6 @@ make fork-easyconfigs-update
 See also [`setup.md`](setup.md)
 
 
-
 ## UL HPC Module Bundles
 
 We no longer require YAML files in a separate repository to define a software set.
@@ -131,7 +130,7 @@ Investigations in progress to deeply accelerate the global software set builds b
 
 See [`build.md`](build.md) for more details.
 
-## Development workflow
+## Bundle Development workflow
 
 See [`workflow.md`](workflow.md)
 

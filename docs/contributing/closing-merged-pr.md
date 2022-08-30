@@ -8,10 +8,10 @@ In particular, the ones with a merge symbol are merged.
 
 ## Workflow overview
 
-__If a pull request is accepted/merged__ _i.e.,_ that the contributed easyconfigs has been merged to the `develop` branch of the official [`easybuilders/easybuild-easyconfigs`](https://github.com/easybuilders/easybuild-easyconfigs), __it is useless to keep the eb file as part of this repository__ since upon build, this branch is also  searched as last resort (see `$EASYBUILD_ROBOT_PATHS` settings in [`settings/default.sh`](https://gitlab.uni.lu/svarrette/sw/-/blob/devel/settings/default.sh)).
+__If a pull request is accepted/merged__ _i.e.,_ that the contributed easyconfigs has been merged to the `develop` branch of the official [`easybuilders/easybuild-easyconfigs`](https://github.com/easybuilders/easybuild-easyconfigs), __it is useless to keep the eb file as part of this repository__ since upon build, this branch is also  searched as last resort (see `$EASYBUILD_ROBOT_PATHS` settings in [`settings/default.sh`](https://github.com/ULHPC/sw/-/blob/devel/settings/default.sh)).
 
 _In short_, once a pull-request is accepted and merged, it is then time to make some cleanup of this repository from the easyconfigs that are now integrated.
-This is facilitated by the script [`./scripts/PR-close`](https://gitlab.uni.lu/svarrette/sw/-/blob/devel/scripts/PR-close)
+This is facilitated by the script [`./scripts/PR-close`](https://github.com/ULHPC/sw/-/blob/devel/scripts/PR-close)
 
 ```bash
 $> ./scripts/PR-close -h
@@ -47,19 +47,19 @@ $> ./scripts/PR-close -n 10311   # Dry-run
 #                                  Dload  Upload   Total   Spent    Left  Speed
 # 100 22472    0 22472    0     0  48211      0 --:--:-- --:--:-- --:--:-- 48223
 # => Repository [git] cleanup from 'easyconfigs/pull-requests/10311/' content
-# deleting: symlink '/Users/svarrette/git/gitlab.uni.lu/svarrette/sw/easyconfigs/pull-requests/10311/LLVM-9.0.1-GCCcore-8.3.0.eb'
-#    ...  and target eb file '/Users/svarrette/git/gitlab.uni.lu/svarrette/sw/easyconfigs/l/LLVM/LLVM-9.0.1-GCCcore-8.3.0.eb'
-# git rm /Users/svarrette/git/gitlab.uni.lu/svarrette/sw/easyconfigs/pull-requests/10311/LLVM-9.0.1-GCCcore-8.3.0.eb
-# git rm /Users/svarrette/git/gitlab.uni.lu/svarrette/sw/easyconfigs/l/LLVM/LLVM-9.0.1-GCCcore-8.3.0.eb
-# git rm -rf /Users/svarrette/git/gitlab.uni.lu/svarrette/sw/easyconfigs/pull-requests/10311
+# deleting: symlink '/Users/svarrette/git/github.com/ULHPC/sw/easyconfigs/pull-requests/10311/LLVM-9.0.1-GCCcore-8.3.0.eb'
+#    ...  and target eb file '/Users/svarrette/git/github.com/ULHPC/sw/easyconfigs/l/LLVM/LLVM-9.0.1-GCCcore-8.3.0.eb'
+# git rm /Users/svarrette/git/github.com/ULHPC/sw/easyconfigs/pull-requests/10311/LLVM-9.0.1-GCCcore-8.3.0.eb
+# git rm /Users/svarrette/git/github.com/ULHPC/sw/easyconfigs/l/LLVM/LLVM-9.0.1-GCCcore-8.3.0.eb
+# git rm -rf /Users/svarrette/git/github.com/ULHPC/sw/easyconfigs/pull-requests/10311
 # git commit -s -m [Merged PR #10311] closing '{compiler}[GCCcore/8.3.0] LLVM v9.0.1'; repo cleanup accordingly
 # Updating (Fork) repository '/Users/svarrette/git/github.com/ULHPC/easybuild-easyconfigs'
 # make fork-easyconfigs-update
 # deleting [remote] branch '20200402130420_new_pr_LLVM901' from (Fork) repository '/Users/svarrette/git/github.com/ULHPC/easybuild-easyconfigs'
 # git -C /Users/svarrette/git/github.com/ULHPC/easybuild-easyconfigs branch -d 20200402130420_new_pr_LLVM901
 # git -C /Users/svarrette/git/github.com/ULHPC/easybuild-easyconfigs push origin --delete 20200402130420_new_pr_LLVM901
-# removing /Users/svarrette/git/gitlab.uni.lu/svarrette/sw/logs/2020-04-06-pull-request-10311.json
-# rm -f /Users/svarrette/git/gitlab.uni.lu/svarrette/sw/logs/2020-04-06-pull-request-10311.json
+# removing /Users/svarrette/git/github.com/ULHPC/sw/logs/2020-04-06-pull-request-10311.json
+# rm -f /Users/svarrette/git/github.com/ULHPC/sw/logs/2020-04-06-pull-request-10311.json
 ```
 
 If all looks good, proceed:
@@ -68,13 +68,13 @@ If all looks good, proceed:
 $> ./scripts/PR-close 10311
 # /!\ WARNING: closing merged pull-request '10313'.
 # Are you sure you want to continue? [Y|n]
-# ... using existing json '/Users/svarrette/git/gitlab.uni.lu/svarrette/sw/logs/2020-04-06-pull-request-10313.json'
+# ... using existing json '/Users/svarrette/git/github.com/ULHPC/sw/logs/2020-04-06-pull-request-10313.json'
 # => Repository [git] cleanup from 'easyconfigs/pull-requests/10313/' content
-# deleting: symlink '/Users/svarrette/git/gitlab.uni.lu/svarrette/sw/easyconfigs/pull-requests/10313/LLVM-10.0.0-GCCcore-8.3.0.eb'
-#    ...  and target eb file '/Users/svarrette/git/gitlab.uni.lu/svarrette/sw/easyconfigs/l/LLVM/LLVM-10.0.0-GCCcore-8.3.0.eb'
+# deleting: symlink '/Users/svarrette/git/github.com/ULHPC/sw/easyconfigs/pull-requests/10313/LLVM-10.0.0-GCCcore-8.3.0.eb'
+#    ...  and target eb file '/Users/svarrette/git/github.com/ULHPC/sw/easyconfigs/l/LLVM/LLVM-10.0.0-GCCcore-8.3.0.eb'
 # rm 'easyconfigs/pull-requests/10313/LLVM-10.0.0-GCCcore-8.3.0.eb'
 # rm 'easyconfigs/l/LLVM/LLVM-10.0.0-GCCcore-8.3.0.eb'
-# fatal: pathspec '/Users/svarrette/git/gitlab.uni.lu/svarrette/sw/easyconfigs/pull-requests/10313' did not match any files
+# fatal: pathspec '/Users/svarrette/git/github.com/ULHPC/sw/easyconfigs/pull-requests/10313' did not match any files
 # [devel c79e2aa] [Merged PR #10313] closing '{compiler}[GCCcore/8.3.0] LLVM v10.0.0'; repo cleanup accordingly
 #  2 files changed, 46 deletions(-)
 #  delete mode 100644 easyconfigs/l/LLVM/LLVM-10.0.0-GCCcore-8.3.0.eb
@@ -132,5 +132,5 @@ $> ./scripts/PR-close 10311
 # error: branch '20200402155358_new_pr_LLVM1000' not found.
 # To github.com:ULHPC/easybuild-easyconfigs.git
 #  - [deleted]               20200402155358_new_pr_LLVM1000
-# removing /Users/svarrette/git/gitlab.uni.lu/svarrette/sw/logs/2020-04-06-pull-request-10313.json
+# removing /Users/svarrette/git/github.com/ULHPC/sw/logs/2020-04-06-pull-request-10313.json
 ```

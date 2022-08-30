@@ -1,9 +1,10 @@
 # User Software builds
 
 Slurm launchers are provided under `scripts/`  to facilitate software builds.
-For convenience, a GNU screen configuration file `config/screenrc` is provided to quickly bootstrap the appropriate tabs:
+For convenience **on `iris`**, a GNU screen configuration file `config/screenrc` is provided to quickly bootstrap the appropriate tabs:
 
 ```bash
+# iris
 screen -c config/screenrc
 # 'SW' tab meant for git / sync operations. To enable the ssh agent:
 #    eval "$(ssh-agent)"
@@ -21,6 +22,8 @@ screen -c config/screenrc
 #    ./scripts/get-interactive-job
 ```
 
+For aion, you should use Tmux instead.
+
 Don't forget to kill your ssh agent when you have finish: `eval "$(ssh-agent -k)"`
 
 You are encouraged to submit/run your builds in each appropriate `<arch>` tab, where you can follow the logs of a given passive build with:
@@ -33,9 +36,13 @@ In general, the following launcher scripts are provided, either for testings pur
 
 | Script                                      | Cluster | Arch.     | Description              | Partition | Settings                     |
 |---------------------------------------------|---------|-----------|--------------------------|-----------|------------------------------|
+| `launcher-{test,prod}-build-cpu.sh`         | aion    | epyc      | AMD CPU default builds   | `batch`   | `settings/[...]/aion.sh`     |
 | `launcher-{test,prod}-build-cpu.sh`         | iris    | broadwell | Intel CPU default builds | `batch`   | `settings/[...]/iris.sh`     |
 | `launcher-{test,prod}-build-cpu-skylake.sh` | iris    | skylake   | Intel CPU Skylake Builds | `batch`   | `settings/[...]/iris.sh`     |
 | `launcher-{test,prod}-build-gpu.sh`         | iris    | skylake   | Nvidia GPU Builds        | `gpu`     | `settings/[...]/iris-gpu.sh` |
+
+In case you wish to **extend** and existing software set, see [`extend.md`](extend.md) for instructions -- you'll have to prefer home/project based builds facilitated by the `resif-load-{home,project}-swset-{prod,devel}` utilities.
+
 
 ## Get an interactive jobs
 
@@ -44,18 +51,18 @@ For a given arch, you **MUST** use the script `scripts/get-interactive-job*` to 
 ```bash
 $ ./scripts/get-interactive-job -h
   get-interactive-job:
-      Get an interactive job for 'broadwell' node to test a RESIF build.
-      By default, this will reserve one **full** node (i.e. 1 task over 28 threads)
+      Get an interactive job for '<arch>' node to test a RESIF build.
+      By default, this will reserve one **full** node (i.e. 1 task over <c> threads)
 USAGE
   ./scripts/get-interactive-job [-n] [-c 1]
 
 OPTIONS:
   -n --dry-run: Dry run mode
-  -c <N>: ask <N> core (thread) instead of 28 (default) -- may be scheduled faster
+  -c <N>: ask <N> core (thread) instead of <c> (default) -- may be scheduled faster
 
-# Get an interactive job for default arch (broadwell on iris)
+# Get an interactive job for default arch (broadwell on iris, epyc on aion)
 $ ./scripts/get-interactive-job
-## OR, for Intel skylake
+## OR, for Intel skylake on iris
 $ ./scripts/get-interactive-job-skylake
 ## OR, for GPU nodes:
 $ ./scripts/get-interactive-job-gpu
@@ -63,31 +70,31 @@ $ ./scripts/get-interactive-job-gpu
 
 ## (Eventually) Install/update EB
 
-Use the interactive jobs to install/update EB to the latest version using `scripts/setup.h` **AFTER** sourcing the appropriate settings
+Use the interactive jobs to install/update EB to the latest version using `scripts/setup.h` **AFTER** sourcing the appropriate settings.
+You probably want to enforce the software set release.
 
 ```bash
 ### Iris broadwell or Aion epyc
 $ ./scripts/get-interactive-job -c1
-$ source settings/[prod/]${ULHPC_CLUSTER}.sh
+$ source settings/[prod/][version/]${ULHPC_CLUSTER}.sh
 $ ./scripts/setup.sh -h    # check $EASYBUILD_PREFIX
 $ ./scripts/setup.sh -n
 $ ./scripts/setup.sh
 
 ### Iris skylake
 $ ./scripts/get-interactive-job-skylake.sh -c1
-$ source settings/[prod/]${ULHPC_CLUSTER}.sh
+$ source settings/[prod/][<version>/]${ULHPC_CLUSTER}.sh
 $ ./scripts/setup.sh -h    # check $EASYBUILD_PREFIX
 $ ./scripts/setup.sh -n
 $ ./scripts/setup.sh
 
 ### Iris GPU
 $ ./scripts/get-interactive-job-gpu.sh -c1
-$ source settings/[prod/]${ULHPC_CLUSTER}-gpu.sh
+$ source settings/[prod/][<version>/]${ULHPC_CLUSTER}-gpu.sh
 $ ./scripts/setup.sh -h    # check $EASYBUILD_PREFIX
 $ ./scripts/setup.sh -n
 $ ./scripts/setup.sh
 ```
-
 
 
 ## Testing Builds (project `sw`)
@@ -99,6 +106,7 @@ _Note:_ The build command is `sg sw -c "eb [...] -r --rebuild"` (to enforce grou
 
 | Mode        | Arch.       | Launcher                                       | Settings                      |
 |-------------|-------------|------------------------------------------------|-------------------------------|
+| Local Tests | `epyc`      | `./scripts/launcher-test-build-amd.sh`         | `source settings/aion.sh`     |
 | Local Tests | `broadwell` | `./scripts/launcher-test-build-cpu.sh`         | `source settings/iris.sh`     |
 | Local Tests | `skylake`   | `./scripts/launcher-test-build-cpu-skylake.sh` | `source settings/iris.sh`     |
 | Local Tests | `gpu`       | `./scripts/launcher-test-build-gpu.sh`         | `source settings/iris-gpu.sh` |
@@ -136,7 +144,7 @@ Each of these scripts supports two main usage (use `-n` for dry runs beforehand 
 These launchers are simple wrapper around the following commands:
 
 ```
-source settings/iris[...].sh
+source settings/<cluster>[...].sh
 eb <file>.eb -r --rebuild -D  # Dry-run, report dependencies
 sg sw -c "eb <file>.eb -r --rebuild"
 ```
@@ -145,10 +153,10 @@ On `iris`, the commands are embeded via `sg` to force the execution within the g
 
 ```bash
 # Interactive tests (broadwell)
-(access)$> si -C broadwell -N 1 --ntasks-per-node 1 -c 28
+(access)$> ./scripts/get-interactive-job
 (node)$> source settings/iris.sh
 (node)$> eb --version
-(node)$> eb -S [...]
+(node)$> eb -S [...]    # OR ./scripts/suggest-easyconfigs -v <version> [...]
 (node)$> ./scripts/launcher-test-build-cpu.sh [toolchains | bio | ...]
 # Passible jobs - (default) builds for Intel (broadwell)
 (access)$> sbatch ./scripts/launcher-test-build-cpu.sh [toolchains | bio | ...]
@@ -156,6 +164,19 @@ On `iris`, the commands are embeded via `sg` to force the execution within the g
 (access)$> sbatch ./scripts/launcher-test-build-cpu-skylake.sh [toolchains | bio | ...]
 # AND/OR GPU optimized builds
 (access)$> sbatch ./scripts/launcher-test-build-gpu.sh [gpu]
+```
+
+Equivalent on `aion`:
+
+```bash
+# Interactive tests (epyc)
+(access)$> ./scripts/get-interactive-job
+(node)$> source settings/aion.sh
+(node)$> eb --version
+(node)$> eb -S [...]    # OR ./scripts/suggest-easyconfigs -v <version> [...]
+(node)$> ./scripts/launcher-test-build-amd.sh [toolchains | bio | ...]
+# Passible jobs - (default) builds for Intel (broadwell)
+(access)$> sbatch ./scripts/launcher-test-build-amd.sh [toolchains | bio | ...]
 ```
 
 Slurm Logs are located under `logs/` directory -- use `tail -s1 -f logs/[...]` to follow them live when tied to a passive job running.
@@ -171,29 +192,38 @@ You may want at some point to clean the logs:
 make clean
 ```
 
-### Testing build against production release
+### Testing build _against_ production release <version>
 
-Once a given version of the ULHPC software set is released to production (Ex: 2019b), it is likely that some users may request the addition of a missing software assuming an easyconfig exists.
-Instead of trying the builds directly in production, you **MUST** first test it under the `sw` project.
+Once a given version of the ULHPC software set is released to production (Ex: 2020b), it is very likely that some users may request the addition of a missing software assuming an easyconfig exists.
+Instead of trying the builds directly in production, you **MUST** first test it under the `sw` project and prefix the production modulepath.
 
-You may want to test a build **against** a production software set (Ex: 2019b) in which case you **MUST** use the `-v <version>` option:
+To facilitate that work, you **MUST** either use the `-v <version>` option, **OR** use the predefined launcher scripts `./scripts/<version>/launcher-test-build-*`.
 
 ```
-[sbatch] ./scripts/launcher-test-build-{cpu,cpu-skylake,gpu}.sh -v 2019b [...]
-```
-You can also decide to target a private environment with `-e <name>` (Ex: 2019b) to ensure the builds goes into a dedicated (separated) directory, note however that **you need to install EB into this directory** (see below).
+# aion
+[sbatch] ./scripts/<version>/launcher-test-build-amd.sh [...]
+# iris
+[sbatch] ./scripts/<version>/launcher-test-build-{cpu,cpu-skylake,gpu}.sh [...]
 
-To facilitate such tests, dedicated launchers scripts have been created under `./scripts/<version>/launcher-test-build-*`
+# Alternative:
+[sbatch] ./scripts/launcher-test-build-amd.sh -v <version> [...]                   # Aion
+[sbatch] ./scripts/launcher-test-build-{cpu,cpu-skylake,gpu}.sh -v <version> [...] # Iris
+```
+
+You can also decide to target a private environment with `-e <name>` (Ex: 2020b) to ensure the builds goes into a dedicated (separated) directory, note however that **you need to install EB into this directory** (see below).
+
+So to facilitate such tests, dedicated launchers scripts have been created under `./scripts/<version>/launcher-test-build-*`
 
 | Mode                            | Arch.       | Launcher                                                 | Settings                                |
 |---------------------------------|-------------|----------------------------------------------------------|-----------------------------------------|
+| Local Tests `<version>` release | `epyc`      | `./scripts/<version>/launcher-test-build-amd.sh`         | `source settings/<version>/aion.sh`     |
 | Local Tests `<version>` release | `broadwell` | `./scripts/<version>/launcher-test-build-cpu.sh`         | `source settings/<version>/iris.sh`     |
 | Local Tests `<version>` release | `skylake`   | `./scripts/<version>/launcher-test-build-cpu-skylake.sh` | `source settings/<version>/iris.sh`     |
 | Local Tests `<version>` release | `gpu`       | `./scripts/<version>/launcher-test-build-gpu.sh`         | `source settings/<version>/iris-gpu.sh` |
 
 Example: testing for QuantumEXPRESSO:
 
-```
+```bash
 ### Ex: broadwell
 # SW tabs: update to latest easyconfigs and settings
 $ make up    # ULHPC/sw repo
@@ -274,7 +304,7 @@ $ exit
 # Skylake tabs
 $ ./scripts/get-interactive-job-skylake -c1
 $ source settings/2019b/iris.sh
-TOP_DIR           = /mnt/irisgpfs/users/svarrette/git/gitlab.uni.lu/ULHPC/sw
+TOP_DIR           = /mnt/irisgpfs/users/svarrette/git/github.com/ULHPC/sw
 ----------------------------------------
 LOCAL_RESIF_ENVIRONMENT = 2019b
 LOCAL_RESIF_SYSTEM_NAME = iris
@@ -295,7 +325,7 @@ $ exit
 # GPU tab
 $ ./scripts/get-interactive-job-gpu -c1
 $ source settings/2019b/iris-gpu.sh
-TOP_DIR           = /mnt/irisgpfs/users/svarrette/git/gitlab.uni.lu/ULHPC/sw
+TOP_DIR           = /mnt/irisgpfs/users/svarrette/git/github.com/ULHPC/sw
 ----------------------------------------
 LOCAL_RESIF_ENVIRONMENT = 2019b
 LOCAL_RESIF_SYSTEM_NAME = iris
@@ -328,7 +358,7 @@ Software and modules will be installed under `/opt/apps/resif` (`$LOCAL_RESIF_RO
 
 ![](https://hpc-docs.uni.lu/environment/images/ULHPC-software-stack.png)
 
-You **MUST BE VERY CAREFUL** when running these scripts as they alter the production environment.
+You **MUST BE VERY CAREFUL** when running these scripts as they alter the production environment. This step is only allowed to the ULHPC teams.
 
 | Mode                  | Arch.       | Launcher                                                         | Settings                                     |
 |-----------------------|-------------|------------------------------------------------------------------|----------------------------------------------|
@@ -350,9 +380,9 @@ For a production release, it is necessary to configure the `ULHPC/sw` repository
 
 ```bash
 ssh resif@iris-cluster
-mkdir git/gitlab.uni.lu/ULHPC
-cd git/gitlab.uni.lu/ULHPC
-git clone ssh://git@gitlab.uni.lu:8022/ULHPC/sw.git
+mkdir git/github.com/ULHPC
+cd git/github.com/ULHPC
+git clone ssh://git@github.com:8022/ULHPC/sw.git
 cd sw
 python3 -m venv ~/venv/resif3
 make setup
@@ -390,16 +420,6 @@ tail -s1 -f logs/RESIF-Prod-GPU-<jobid>.out
 ## Post-installation
 
 Some software require a manual post-install run as root.
+See `./scripts/post-install.sh`
 
-### Singularity
-
-```bash
-# next steps after installation
-# INSTALLATION_PATH=your_installation_path
-# chown root:root $INSTALLATION_PATH/Singularity/*/etc/singularity/singularity.conf
-# chown root:root $INSTALLATION_PATH/Singularity/*/etc/singularity/capability.json
-# chown root:root $INSTALLATION_PATH/Singularity/*/etc/singularity/ecl.toml
-# chown root:root $INSTALLATION_PATH/Singularity/*/libexec/singularity/bin/*-suid
-# chmod 4755 $INSTALLATION_PATH/Singularity/*/libexec/singularity/bin/*-suid
-# chmod +s $INSTALLATION_PATH/Singularity/*/libexec/singularity/bin/*-suid
-```
+Details are provided in the [debugging notes](build-debugging-notes.md)
